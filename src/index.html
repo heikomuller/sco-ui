@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standard Cortical Observer</title>
+
+<link rel="icon" type="image/png" href="./images/favicon-32x32.png" />
+
+<!-- Styles -->
+<link href="./css/bootstrap.css" rel="stylesheet">
+<link href="./public/vendor/datatables/media/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<link href="./public/vendor/dropzone/dist/min/dropzone.min.css" rel="stylesheet">
+<link href="./css/styles.css" rel="stylesheet">
+<link href="./css/sco.css" rel="stylesheet">
+
+<!--[if lt IE 9]>
+<script src="js/html5shiv.js"></script>
+<script src="js/respond.min.js"></script>
+<![endif]-->
+
+</head>
+
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#/" onclick="toggleSidebar(); return false;"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></a> <p class="navbar-text"><span class="navbar-title">Standard Cortical Observer</span></p>
+				<ul class="nav navbar-top-links navbar-right">
+	                <!--Dropdown Database -->
+                    <li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+	                        <i class="fa fa-database fa-fw"></i> <i class="fa fa-caret-down"></i>
+	                    </a>
+						<ul class="dropdown-menu dropdown-doc">
+                            <li><a href="#/" id="nav-home"><i class="fa fa-home fa-fw"></i> Home</a></li>
+                            <li><a href="#/" id="nav-subjects"><i class="fa fa-group fa-fw"></i> Subjects</a></li>
+                            <li><a href="#/" id="nav-images"><i class="fa fa-file-image-o fa-fw"></i> Images</a></li>
+                            <li><a href="#/" id="nav-experiments"><i class="fa fa-area-chart"></i> Experiments</a></li>
+	                    </ul>
+                    </li><!-- dropdown -->
+					<!-- Dropdown Settings and Documentation -->
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+	                        <i class="fa fa-cog fa-fw"></i> <i class="fa fa-caret-down"></i>
+	                    </a>
+						<ul class="dropdown-menu dropdown-doc">
+	                        <li><a href="/sco-server/api/v1/doc/index.html"><i class="fa fa-info fa-fw"></i> API Documentation</a></li>
+	                        <li class="divider"></li>
+	                        <li><a href="#"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+	                    </ul>
+	                </li> <!-- dropdown -->
+	            </ul>
+			</div>
+
+		</div><!-- /.container-fluid -->
+	</nav> <!-- Navbar -->
+
+	<!-- Navigation Sidebar-->
+	<div class="sidebar" id="sidebar-collapse">
+		<ul class="nav menu">
+			<li><span class="sidebar-headline"><i class="fa fa-database"></i> Database</span></li>
+			<li class="active" id="li-home"><a href="#/"><i class="fa fa-home" aria-hidden="true"></i> Home</a></li>
+			<li id="li-subjects"><a href="#/"><i class="fa fa-group" aria-hidden="true" onclick="showSubjectsPage();"></i> Subjects</a></li>
+			<li id="li-images"><a href="#/"><i class="fa fa-file-image-o" aria-hidden="true"></i> Images</a></li>
+			<li id="li-experiments"><a href="#/"><i class="fa fa-area-chart" aria-hidden="true"></i> Experiments</a></li>
+			<li role="presentation" class="divider"></li>
+		</ul>
+	</div>
+
+    <!-- Main content panel -->
+	<div class="main" id="main-panel">
+		<!-- Breadcromb Headline -->
+        <div class="row breadcrumb-headline">
+            <p class="breadcrumb-headline" id="main-title"></p>
+		</div>
+        <!-- Content Panel -->
+		<div id="main-content">
+		</div>
+	</div>	<!--Main-->
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-below">
+            <div class="row">
+                <div class="col-lg-12 footer-image">
+                    <img src="./images/nyu_short_black.png" alt="NYU Logo" height="24" width="71">
+                </div>
+            </div>
+        </div>
+    </footer> <!-- Footer -->
+
+
+    <script src="https://use.fontawesome.com/6f90c55abf.js"></script>
+    <script src="./public/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="./public/vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./public/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="./public/vendor/datatables/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="./public/vendor/dropzone/dist/min/dropzone.min.js"></script>
+    <script src="./public/vendor/filesize/lib/filesize.min.js"></script>
+    <script src="./js/forms.js"></script>
+    <script src="./js/listing.js"></script>
+    <script src="./js/headline.js"></script>
+    <script src="./js/pages.js"></script>
+    <script src="./js/panel.js"></script>
+    <script src="./js/server.js"></script>
+    <script src="./js/experiments/forms.js"></script>
+    <script src="./js/experiments/listing.js"></script>
+    <script src="./js/experiments/pages.js"></script>
+    <script src="./js/images/listing.js"></script>
+    <script src="./js/images/pages.js"></script>
+    <script src="./js/subjects/listing.js"></script>
+    <script src="./js/subjects/pages.js"></script>
+    <script src="./js/sco.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp('http://cds-swg1.cims.nyu.edu:5000/sco-server/api/v1/');
+        }, false);
+    </script>
+</body>
+
+</html>

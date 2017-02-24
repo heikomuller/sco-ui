@@ -1,0 +1,24 @@
+{
+  "name": "sco-ui",
+  "authors": [
+    "Heiko Mueller <heiko.muller@gmail.com>"
+  ],
+  "description": "User Interface for Standard Cortical Observer",
+  "main": "",
+  "license": "GPL-3.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7",
+    "dropzone": "dropzonejs#^4.3.0",
+    "filesize": "^3.5.4",
+    "datatables": "^1.10.13"
+  }
+}
