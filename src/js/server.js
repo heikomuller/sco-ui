@@ -80,6 +80,16 @@ API.prototype = {
 };
 
 /**
+ * Convert timestamps in UTC time (as returned by he server) into local time.
+ */
+function convertUTCDate2Local(timestamp) {
+    var offset = new Date().getTimezoneOffset();
+    var utc_date = new Date(timestamp)
+    utc_date.setMinutes(utc_date.getMinutes() - offset);
+    return utc_date.toLocaleString();
+};
+
+/**
  * Generic function to delete an object. Calls the given callback function on
  * success to reload page content.
  */

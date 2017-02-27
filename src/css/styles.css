@@ -34,6 +34,7 @@ h3, h4 {
 	padding: 0; margin: 0;
 }
 
+.fa-spin { -webkit-filter: blur(0); }
 
 /*
  * Navbar

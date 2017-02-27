@@ -20,7 +20,7 @@ $EXPERIMENT_TABLE_DEF = [
         'id' : 'timestamp',
         'name' : 'Created',
         'converter' : function(timestamp) {
-            return new Date(timestamp).toLocaleString();
+            return convertUTCDate2Local(timestamp);
         }
     }
 ];
@@ -60,7 +60,7 @@ $EXPERIMENT_RUNS_TABLE_DEF = [
         'id' : 'timestamp',
         'name' : 'Created',
         'converter' : function(timestamp) {
-            return new Date(timestamp).toLocaleString();
+            return convertUTCDate2Local(timestamp);
         }
     }
 ];
