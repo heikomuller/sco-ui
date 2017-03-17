@@ -175,11 +175,11 @@ function toggleSidebar() {
     // Currently we simply determine whether the sidebar is visible based on
     // the width of the element.
     // TODO: This could be optimized.
-    if (sidebar.style.width === "220px") {
-        sidebar.style.width = 0;
-        document.getElementById($EL_PANEL).style.marginLeft = 0;
-    } else {
+    if (sidebar.style.width === "0px") {
         sidebar.style.width = "220px";
         document.getElementById($EL_PANEL).style.marginLeft = "220px";
+    } else {
+        sidebar.style.width = 0;
+        document.getElementById($EL_PANEL).style.marginLeft = 0;
     }
 };

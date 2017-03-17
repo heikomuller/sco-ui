@@ -79,17 +79,13 @@ function showImageGroup(url, api) {
                     )
                 }
             );
+            var infoModal = new InfoModalForm('imgparaInfoModal');
             var options = new OptionsForm(
                 'objOp',
                 'Options',
                 data.options,
-                [
-                    'stimulus_pixels_per_degree',
-                    'stimulus_edge_value',
-                    'stimulus_aperture_edge_value',
-                    'normalized_stimulus_aperture',
-                    'stimulus_gamma',
-                ],
+                api.imageGroupParameters,
+                infoModal,
                 function(values) {
                     upsertOptions(
                         getHATEOASReference('options', data.links),
@@ -105,6 +101,7 @@ function showImageGroup(url, api) {
             var html = name.html();
             html += description.html();
             html += options.html();
+            html += infoModal.html();
             html += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
             html = '<div class="row">' +
                 '<div class="col-lg-4">' + html + '</div>' +

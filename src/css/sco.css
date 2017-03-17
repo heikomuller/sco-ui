@@ -24,7 +24,7 @@
  */
 
 #sidebar-collapse {
-    width: 0px;
+    width: 220px;
 }
 
 span.sidebar-headline  {
@@ -49,7 +49,7 @@ span.sidebar-headline  {
  */
 
 #main-panel {
-    margin-left: 0px;
+    margin-left: 220px;
 }
 
 #main-content {
@@ -96,6 +96,17 @@ p.breadcrumb-headline {
     padding: 20px;
 }
 
+/*
+ * FORMS
+ */
+
+.header-info {
+    background: #00a9ce;
+}
+
+.info-title {
+    color: #fff;
+}
 /*
 
  FILE UPLOAD
@@ -187,6 +198,9 @@ td.prop-name {
     margin-bottom: 20px;
 }
 
+span.default-value {
+    color: #a0a0a0;
+}
 /*
  * FOOTER
  */
@@ -215,9 +229,20 @@ a.internal-link {
     text-decoration: none;
 }
 
+.info-link {
+    color: #00a9ce;
+    text-decoration: none;
+}
+
 .action-link:hover,
 .text-link:hover {
     color: #881111;
+    text-decoration: underline;
+}
+
+.info-link:hover,
+.info-link:focus {
+    color: #00a9ce;
     text-decoration: underline;
 }
 

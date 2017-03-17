@@ -5,6 +5,13 @@
 var API = function(data) {
     // API overview request response
     this.data = data;
+    /**
+     * List of parameter definitions for image groups.
+     */
+    this.imageGroupParameters = [];
+    for (var i = 0; i < data.images.length; i++) {
+        this.imageGroupParameters.push(new ParameterDef(data.images[i]))
+    }
 };
 
 API.prototype = {
@@ -130,24 +137,8 @@ function getHATEOASReference(id, links) {
 };
 
 /**
- * Get reference with given rel from HATEOAS reference list.
- *
- * @param {string} name
- * @param {list} options
- * @returns {string}
- */
-function getOption(name, options) {
-    for (var i = 0; i < options.length; i++) {
-        var op = options[i];
-        if (op.name === name) {
-            return op.value;
-        }
-    }
-    return '';
-};
-
-/**
- * Get reference with given rel from HATEOAS reference list.
+ * Get value for property with given key in list of key,value pairs. The result
+ * is an empty string if no element matching the given key is found.
  *
  * @param {string} name
  * @param {list} links

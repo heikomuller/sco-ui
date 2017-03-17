@@ -342,13 +342,13 @@ function showModelRun(url, api) {
             html += '<p class="attribute-label">Schedule</p>';
             html += '<table class="properties">';
             if (data.schedule.createdAt) {
-                html += '<tr><td class="prop-name">Created</td><td class="prop-value">' + new Date(data.schedule.createdAt).toLocaleString() + '</td></tr>';
+                html += '<tr><td class="prop-name">Created</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.createdAt) + '</td></tr>';
             }
             if (data.schedule.startedAt) {
-                html += '<tr><td class="prop-name">Started</td><td class="prop-value">' + new Date(data.schedule.startedAt).toLocaleString() + '</td></tr>';
+                html += '<tr><td class="prop-name">Started</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.startedAt) + '</td></tr>';
             }
             if (data.schedule.finishedAt) {
-                html += '<tr><td class="prop-name">Finished</td><td class="prop-value">' + new Date(data.schedule.finishedAt).toLocaleString() + '</td></tr>';
+                html += '<tr><td class="prop-name">Finished</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.finishedAt) + '</td></tr>';
             }
             html += '</table>';
             //html += '<p class="attribute-value"><a id="expSubjectRef" class="internal-link" href="#/">' + data.subject.name + '</a></p>';
