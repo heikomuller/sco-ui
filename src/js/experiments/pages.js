@@ -1,4 +1,15 @@
 /**
+ * Get model with given id from list of models.
+ */
+function getModel(models, id) {
+    for (var i = 0; i < models.length; i++) {
+        if (id === models[i].id) {
+            return models[i];
+        }
+    }
+};
+
+/**
  * Show content for experiments listing page.
  *
  * @param {API} api
@@ -46,23 +57,17 @@ function showCreateModelRunPage(experiment, api) {
     col1Html += '<div class="attribute-value">';
     col1Html += '<input id="txtRunDescription" type="text" class="form-control" placeholder="Description for Model Run">';
     col1Html += '</div>';
-    var col2Html = '<p class="attribute-label">Parameter</p>';
-    col2Html += '<table class="options-form">';
-    var parameter = [
-        {'name' : 'gabor_orientations', 'default' : '8'},
-        {'name' : 'max_eccentricity', 'default' : '12'},
-        {'name' : 'normalized_pixels_per_degree', 'default' : ''}
-    ];
-    for (var i = 0; i < parameter.length; i++) {
-        var para = parameter[i];
-        col2Html += '<tr>';
-        col2Html += '<td class="op-name">' + para.name + '</td>';
-        col2Html += '<td class="op-ctrl">';
-        col2Html += '<input id="' + para.name + '" type="text" class="form-control" placeholder="' + para.default + '">';
-        col2Html += '</td>';
-        col2Html += '</tr>';
+    var col2Html = '<p class="attribute-label">Model</p>';
+    col2Html += '<div class="attribute-value">';
+    col2Html += '<select class="form-control" id="cboModel">';
+    for (var i = 0; i < api.models.length; i++) {
+        var model = api.models[i];
+        col2Html += '<option value="' + model.id + '">' + model.name + '</option>';
     }
-    col2Html += '</table>';
+    col2Html += '</select>';
+    col2Html += '</div>';
+    col2Html += '<p class="attribute-label">Parameter</p>';
+    col2Html += '<div class="attribute-value" id="modelParameterSection"></div>';
     col2Html += '<div class="button-row pull-right">';
     col2Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
     col2Html += '&nbsp;&nbsp;&nbsp;';
@@ -77,11 +82,16 @@ function showCreateModelRunPage(experiment, api) {
     showModelRunHeadline('New ...', experiment, api);
     $('#' + $EL_CONTENT).html(new Panel('Run Predictive Model', html).html());
     // Assign onclick handler
+    (function(experiment, api){
+        $('#cboModel').change(function(){
+            showSelectedModelParameter(experiment, api, $('#cboModel').val());
+        });
+    })(experiment, api);
     (function(experiment, api) {
         $('#btnSubmitRun').click(function() {
             var name = $('#txtRunName').val().trim();
             if (!name) {
-                alert('Please provide a new for the new model run.');
+                alert('Please provide a name for the new model run.');
                 return false;
             }
             var config = {'name' : name};
@@ -89,13 +99,22 @@ function showCreateModelRunPage(experiment, api) {
             if (description) {
                 config['properties'] = [{'key':'description', 'value':description}];
             }
+            var model = getModel(api.models, $('#cboModel').val());
+            if (!model) {
+                alert('Please select a model to run.');
+                return false;
+            }
+            config['model'] = model.id;
             config['arguments'] = [];
-            var parameter = ['gabor_orientations', 'max_eccentricity', 'normalized_pixels_per_degree'];
-            for (var i = 0; i < parameter.length; i++) {
-                var para = parameter[i];
-                var val = $('#' + para).val().trim();
-                if (val) {
-                    config['arguments'].push({'name':para, 'value':val});
+            for (var i = 0; i < model.parameters.length; i++) {
+                var para = model.parameters[i];
+                var value = para.controlValue('mps' + para.id);
+                if (value !== '') {
+                    if (!para.isValid(value)) {
+                        alert('Invalid value for ' + para.name + ': \'' + value + '\' not of expected type \'' + para.type.name + '\'');
+                        return false;
+                    }
+                    config['arguments'].push({'name' : para.id, 'value' : value});
                 }
             }
             $.ajax({
@@ -110,7 +129,7 @@ function showCreateModelRunPage(experiment, api) {
                     if (xhr.responseText) {
                         var err = JSON.parse(xhr.responseText).message;
                     } else {
-                        var err = 'There was an error deleting the ' + objtype;
+                        var err = 'There was an error creating the new run';
                     }
                     alert(err);
                 }
@@ -122,6 +141,8 @@ function showCreateModelRunPage(experiment, api) {
             showExperiment(getHATEOASReference('self', experiment.links), api);
         });
     })(experiment, api);
+    // Show parameter for default model
+    showSelectedModelParameter(experiment, api, api.models[0].id);
 };
 
 /**
@@ -328,45 +349,56 @@ function showModelRun(url, api) {
                     )
                 }
             );
-            var html = name.html();
-            html += description.html();
-            html += '<p class="attribute-label">State</p>';
-            html += '<p class="attribute-value">' + data.state + '</p>';
-            html += '<p class="attribute-label">Parameter</p>';
-            html += '<table class="properties">';
-            for (var i = 0; i < data.arguments.length; i++) {
-                var arg = data.arguments[i];
-                html += '<tr><td class="prop-name">' + arg.name + '</td><td class="prop-value">' + arg.value + '</td></tr>';
-            }
-            html += '</table>';
-            html += '<p class="attribute-label">Schedule</p>';
-            html += '<table class="properties">';
+            var htmlCol1 = name.html();
+            htmlCol1 += description.html();
+            htmlCol1 += '<p class="attribute-label">State</p>';
+            htmlCol1 += '<p class="attribute-value">' + data.state + '</p>';
+            htmlCol1 += '<p class="attribute-label">Schedule</p>';
+            htmlCol1 += '<table class="properties">';
             if (data.schedule.createdAt) {
-                html += '<tr><td class="prop-name">Created</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.createdAt) + '</td></tr>';
+                htmlCol1 += '<tr><td class="prop-name">Created</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.createdAt) + '</td></tr>';
             }
             if (data.schedule.startedAt) {
-                html += '<tr><td class="prop-name">Started</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.startedAt) + '</td></tr>';
+                htmlCol1 += '<tr><td class="prop-name">Started</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.startedAt) + '</td></tr>';
             }
             if (data.schedule.finishedAt) {
-                html += '<tr><td class="prop-name">Finished</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.finishedAt) + '</td></tr>';
+                htmlCol1 += '<tr><td class="prop-name">Finished</td><td class="prop-value">' + convertUTCDate2Local(data.schedule.finishedAt) + '</td></tr>';
             }
-            html += '</table>';
+            htmlCol1 += '</table>';
             //html += '<p class="attribute-value"><a id="expSubjectRef" class="internal-link" href="#/">' + data.subject.name + '</a></p>';
             if (data.state === 'SUCCESS') {
-                html += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
+                htmlCol1 += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
             } else {
-                html += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
+                htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
             }
-            var content = '';
             if (data.state === 'FAILED') {
-                content = '<p class="attribute-label">Errors</p><pre>';
+                var content = '<p class="attribute-label">Errors</p><pre>';
                 for (var i = 0; i < data.errors.length; i++) {
                     content += data.errors[i];
                 }
                 content += '</pre>';
+                html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
+                    '<div class="col-lg-8">' + content + '</div></div>';
+            } else {
+                var model = getModel(api.models, data.model);
+                var htmlCol2 = '<p class="attribute-label">Model</p>';
+                htmlCol2 += '<p class="attribute-value">' + model.name + '</p>';
+                htmlCol2 += '<p class="attribute-label">Parameter</p>';
+                htmlCol2 += '<table class="properties">';
+                for (var i = 0; i < model.parameters.length; i++) {
+                    var para = model.parameters[i];
+                    htmlCol2 += '<tr>';
+                    htmlCol2 += '<td class="op-name">' + para.htmlTitle('mrParaInfo' + i) + '</td>';
+                    htmlCol2 += '<td class="op-value">' + para.htmlValue(data.arguments) + '</td>';
+                    htmlCol2 += '</tr>';
+                }
+                htmlCol2 += '</table>';
+                html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
+                    '<div class="col-lg-4">' + htmlCol2 + '</div>' +
+                    '<div class="col-lg-4"></div></div>';
             }
-            html = '<div class="row"><div class="col-lg-4">' + html + '</div>' +
-                '<div class="col-lg-8">' + content + '</div>';
+            var infoModal = new InfoModalForm('mrInfoModal');
+            html += infoModal.html();
             // Display content
             sidebarSetActive('');
             showModelRunHeadline(data.name, data.experiment, api);
@@ -391,6 +423,16 @@ function showModelRun(url, api) {
                     showExperiment(url, api);
                 });
             })(getHATEOASReference('self', data.experiment.links), api);
+            for (var i = 0; i < model.parameters.length; i++) {
+                var para = model.parameters[i];
+                if (para.description !== '') {
+                    (function(elementId, para, infoModal) {
+                        $('#' + elementId).click(function() {
+                            infoModal.show(para.name, para.description);
+                        });
+                    })('mrParaInfo' + i, para, infoModal);
+                }
+            }
         },
         error: function(xhr, status, error) {
             if (xhr.responseText) {
@@ -400,4 +442,33 @@ function showModelRun(url, api) {
         }
     });
     return false;
+};
+
+function showSelectedModelParameter(experiment, api, modelId) {
+    var model = getModel(api.models, modelId);
+    var html = '<table class="options-form">';
+    for (var i = 0; i < model.parameters.length; i++) {
+        var para = model.parameters[i];
+        html += '<tr>';
+        html += '<td class="op-name">' + para.htmlTitle('mpsOpInfo' + i) + '</td>';
+        html += '<td class="op-ctrl">';
+        html += para.htmlControl('mps' + para.id, []);
+        html += '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+    var infoModal = new InfoModalForm('mpsInfoModal');
+    html += infoModal.html();
+    $('#modelParameterSection').html(html);
+    // Assign info button onclick handler
+    for (var i = 0; i < model.parameters.length; i++) {
+        var para = model.parameters[i];
+        if (para.description !== '') {
+            (function(elementId, para, infoModal) {
+                $('#' + elementId).click(function() {
+                    infoModal.show(para.name, para.description);
+                });
+            })('mpsOpInfo' + i, para, infoModal);
+        }
+    }
 };

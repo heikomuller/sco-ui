@@ -12,6 +12,20 @@ var API = function(data) {
     for (var i = 0; i < data.images.length; i++) {
         this.imageGroupParameters.push(new ParameterDef(data.images[i]))
     }
+    /**
+     * List of models
+     */
+    this.models = [];
+    for (var i = 0; i < data.models.length; i++) {
+        var m = data.models[i];
+        var model = {'id' : m.id, 'name' : m.name, 'description' : m.description};
+        var parameters = [];
+        for (var p = 0; p < m.parameters.length; p++) {
+            parameters.push(new ParameterDef(m.parameters[p]));
+        }
+        model['parameters'] = parameters;
+        this.models.push(model);
+    }
 };
 
 API.prototype = {
@@ -90,9 +104,9 @@ API.prototype = {
  * Convert timestamps in UTC time (as returned by he server) into local time.
  */
 function convertUTCDate2Local(timestamp) {
-    var offset = new Date().getTimezoneOffset();
+    //var offset = new Date().getTimezoneOffset();
     var utc_date = new Date(timestamp)
-    utc_date.setMinutes(utc_date.getMinutes() - offset);
+    //utc_date.setMinutes(utc_date.getMinutes() - offset);
     return utc_date.toLocaleString();
 };
 

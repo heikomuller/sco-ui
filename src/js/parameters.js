@@ -25,7 +25,14 @@ var ParameterDef = function(paraDef) {
      */
     if (paraDef.default) {
         if (paraDef.type.name === 'dict') {
-            this.defaultValue = '{}';
+            this.defaultValue = '';
+            for (var i = 0; i < paraDef.default.length; i++) {
+                if (i > 0) {
+                    this.defaultValue += ', ';
+                }
+                var pair = paraDef.default[i];
+                this.defaultValue += pair.key + ':' + pair.value;
+            }
         } else {
             this.defaultValue = paraDef.default;
         }
@@ -44,17 +51,14 @@ ParameterDef.prototype = {
      * parameter.
      */
     controlValue : function(elementId) {
-        if (this.type.name === 'enum') {
-        } else {
-            return $('#' + elementId).val().trim();
-        }
+        return $('#' + elementId).val().trim();
     },
     formatValue : function(value) {
         if (this.type.name == 'array') {
             var text = '';
             for (var i = 0; i < value.length; i++) {
                 if (i > 0) {
-                    text += ',';
+                    text += ', ';
                 }
                 var val = value[i];
                 if (val instanceof Array) {
@@ -62,6 +66,16 @@ ParameterDef.prototype = {
                 } else {
                     text += val;
                 }
+            }
+            return text;
+        } else if (this.type.name == 'dict') {
+            var text = '';
+            for (var i = 0; i < value.length; i++) {
+                if (i > 0) {
+                    text += ', ';
+                }
+                var pair = value[i];
+                text += pair.key + ':' + pair.value;
             }
             return text;
         } else {
@@ -78,7 +92,17 @@ ParameterDef.prototype = {
             }
         }
         if (this.type.name === 'enum') {
-
+            var html = '<select id="' + elementId + '" class="form-control">';
+            for (var i = 0; i < this.type.values.length; i++) {
+                var val = this.type.values[i];
+                html += '<option value="' + val + '"';
+                if (val === this.defaultValue) {
+                    html += ' selected';
+                }
+                html += '>' + val + '</option>';
+            }
+            html += '</select>';
+            return html;
         } else {
             return '<input id="' + elementId + '" type="text" class="form-control" ' +
                 'placeholder="' + this.defaultValue + '" value="' + value + '">'
@@ -125,9 +149,17 @@ ParameterDef.prototype = {
             } else {
                 return isArray(value);
             }
+        } else if (this.type.name === 'dict') {
+            if ((value.startsWith('{')) && (value.endsWith(']'))) {
+                return isDict(value.substring(1, value.length - 1).trim())
+            } else {
+                return isDict(value);
+            }
+        } else if (this.type.name === 'enum') {
+            return (value !== '');
         } else {
             console.log(this.type);
-            return true;
+            return false;
         }
     }
 };
@@ -170,4 +202,24 @@ function isArray(value) {
         }
     }
     return true;
-}
+};
+
+/**
+ * Returns true if the given string is a dictionary of integer : float pairs.
+ */
+function isDict(value) {
+    var tokens = value.split(",");
+    for (var i = 0; i < tokens.length; i++) {
+        var pair = tokens[i].split(':');
+        if (pair.length != 2) {
+            return false;
+        }
+        if (isNaN(parseInt(pair[0].trim()))) {
+            return false;
+        }
+        if (isNaN(parseFloat(pair[1].trim()))) {
+            return false;
+        }
+    }
+    return true;
+};
