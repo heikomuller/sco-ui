@@ -26,12 +26,11 @@ var ParameterDef = function(paraDef) {
     if (paraDef.default) {
         if (paraDef.type.name === 'dict') {
             this.defaultValue = '';
-            for (var i = 0; i < paraDef.default.length; i++) {
-                if (i > 0) {
+            for (key in paraDef.default) {
+                if (this.defaultValue !== '') {
                     this.defaultValue += ', ';
                 }
-                var pair = paraDef.default[i];
-                this.defaultValue += pair.key + ':' + pair.value;
+                this.defaultValue += key + ':' + paraDef.default[key];
             }
         } else {
             this.defaultValue = paraDef.default;
@@ -70,12 +69,11 @@ ParameterDef.prototype = {
             return text;
         } else if (this.type.name == 'dict') {
             var text = '';
-            for (var i = 0; i < value.length; i++) {
-                if (i > 0) {
+            for (key in value) {
+                if (text !== '') {
                     text += ', ';
                 }
-                var pair = value[i];
-                text += pair.key + ':' + pair.value;
+                text += key + ':' + value[key];
             }
             return text;
         } else {
