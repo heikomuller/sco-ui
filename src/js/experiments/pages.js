@@ -371,6 +371,7 @@ function showModelRun(url, api) {
             } else {
                 htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
             }
+            var model = getModel(api.models, data.model);
             if (data.state === 'FAILED') {
                 var content = '<p class="attribute-label">Errors</p><pre>';
                 for (var i = 0; i < data.errors.length; i++) {
@@ -380,7 +381,6 @@ function showModelRun(url, api) {
                 html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
                     '<div class="col-lg-8">' + content + '</div></div>';
             } else {
-                var model = getModel(api.models, data.model);
                 var htmlCol2 = '<p class="attribute-label">Model</p>';
                 htmlCol2 += '<p class="attribute-value">' + model.name + '</p>';
                 htmlCol2 += '<p class="attribute-label">Parameter</p>';
