@@ -97,6 +97,20 @@ p.breadcrumb-headline {
 }
 
 /*
+ * HEADLINES & PARAGRAPHS
+ */
+
+#modelDescription {
+    padding: 10px;
+    border: 1px solid #acecf9;
+    border-radius: 6px;
+    font-style: italic;
+    color: #585858;
+    background: #effffe;
+}
+
+
+/*
  * FORMS
  */
 
@@ -107,6 +121,12 @@ p.breadcrumb-headline {
 .info-title {
     color: #fff;
 }
+
+#cboModel {
+     margin-bottom: 10px;
+}
+
+
 /*
 
  FILE UPLOAD

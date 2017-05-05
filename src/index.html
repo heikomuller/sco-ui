@@ -104,6 +104,17 @@
     <script src="./public/vendor/datatables/media/js/dataTables.bootstrap.min.js"></script>
     <script src="./public/vendor/dropzone/dist/min/dropzone.min.js"></script>
     <script src="./public/vendor/filesize/lib/filesize.min.js"></script>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.30/vega.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.2/vega-lite.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.14/vega-embed.js"></script>
+
+    <!--script src="./public/vendor/d3/d3.min.js"></script>
+    <script src="./public/vendor/vega/vega.min.js"></script>
+    <script src="./public/vendor/vega-lite/vega-lite.min.js"></script>
+    <script src="./public/vendor/vega-embed/vega-embed.min.js"></script-->
+
     <script src="./js/forms.js"></script>
     <script src="./js/listing.js"></script>
     <script src="./js/headline.js"></script>
@@ -113,6 +124,7 @@
     <script src="./js/server.js"></script>
     <script src="./js/experiments/forms.js"></script>
     <script src="./js/experiments/listing.js"></script>
+    <script src="./js/experiments/vis.js"></script>
     <script src="./js/experiments/pages.js"></script>
     <script src="./js/images/listing.js"></script>
     <script src="./js/images/pages.js"></script>
@@ -122,7 +134,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            initApp('http://cds-swg1.cims.nyu.edu/sco-server/api/v1/');
+            initApp('http://cds-swg1.cims.nyu.edu/sco-dev-server/api/v1/');
         }, false);
     </script>
 </body>

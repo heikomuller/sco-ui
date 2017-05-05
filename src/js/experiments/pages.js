@@ -47,6 +47,7 @@ function showExperimentsPage(api) {
 };
 
 function showCreateModelRunPage(experiment, api) {
+    /* COLUMN 1 */
     var col1Html = '<p class="attribute-label">Experiment</p>';
     col1Html += '<p class="attribute-value">' + experiment.name + '</p>';
     col1Html += '<p class="attribute-label">Name</p>';
@@ -57,6 +58,7 @@ function showCreateModelRunPage(experiment, api) {
     col1Html += '<div class="attribute-value">';
     col1Html += '<input id="txtRunDescription" type="text" class="form-control" placeholder="Description for Model Run">';
     col1Html += '</div>';
+    /* COLUMN 2 */
     var col2Html = '<p class="attribute-label">Model</p>';
     col2Html += '<div class="attribute-value">';
     col2Html += '<select class="form-control" id="cboModel">';
@@ -65,18 +67,19 @@ function showCreateModelRunPage(experiment, api) {
         col2Html += '<option value="' + model.id + '">' + model.name + '</option>';
     }
     col2Html += '</select>';
+    col2Html += '<p class="attribute-value" id="modelDescription"></p>';
     col2Html += '</div>';
-    col2Html += '<p class="attribute-label">Parameter</p>';
-    col2Html += '<div class="attribute-value" id="modelParameterSection"></div>';
-    col2Html += '<div class="button-row pull-right">';
-    col2Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
-    col2Html += '&nbsp;&nbsp;&nbsp;';
-    col2Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
-    col2Html += '</div>';
+    /* COLUMN 3 */
+    var col3Html = '<p class="attribute-label">Parameter</p>';
+    col3Html += '<div class="attribute-value" id="modelParameterSection"></div>';
+    col3Html += '<div class="button-row pull-right">';
+    col3Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
+    col3Html += '&nbsp;&nbsp;&nbsp;';
+    col3Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
+    col3Html += '</div>';
     html = '<div class="row"><div class="col-lg-4">' + col1Html + '</div>' +
         '<div class="col-lg-4">' + col2Html + '</div>' +
-        '<div class="col-lg-4">' +
-        '</div>';
+        '<div class="col-lg-4">' + col3Html + '</div></div>';
     // Display content
     sidebarSetActive('');
     showModelRunHeadline('New ...', experiment, api);
@@ -371,7 +374,7 @@ function showModelRun(url, api) {
             } else {
                 htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
             }
-            var model = getModel(api.models, data.model);
+            var model = getModel(api.models, data.model.id);
             if (data.state === 'FAILED') {
                 var content = '<p class="attribute-label">Errors</p><pre>';
                 for (var i = 0; i < data.errors.length; i++) {
@@ -381,21 +384,37 @@ function showModelRun(url, api) {
                 html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
                     '<div class="col-lg-8">' + content + '</div></div>';
             } else {
+                /* COLUMN 2 */
                 var htmlCol2 = '<p class="attribute-label">Model</p>';
                 htmlCol2 += '<p class="attribute-value">' + model.name + '</p>';
-                htmlCol2 += '<p class="attribute-label">Parameter</p>';
-                htmlCol2 += '<table class="properties">';
+                if (model.description) {
+                    htmlCol2 += '<p class="attribute-value" id="modelDescription">';
+                    htmlCol2 += model.description;
+                    htmlCol2 += '</p>';
+                }
+                /* COLUMN 3 */
+                var htmlCol3 = '<p class="attribute-label">Parameter</p>';
+                htmlCol3 += '<table class="properties">';
                 for (var i = 0; i < model.parameters.length; i++) {
                     var para = model.parameters[i];
-                    htmlCol2 += '<tr>';
-                    htmlCol2 += '<td class="op-name">' + para.htmlTitle('mrParaInfo' + i) + '</td>';
-                    htmlCol2 += '<td class="op-value">' + para.htmlValue(data.arguments) + '</td>';
-                    htmlCol2 += '</tr>';
+                    htmlCol3 += '<tr>';
+                    htmlCol3 += '<td class="op-name">' + para.htmlTitle('mrParaInfo' + i) + '</td>';
+                    htmlCol3 += '<td class="op-value">' + para.htmlValue(data.arguments) + '</td>';
+                    htmlCol3 += '</tr>';
                 }
-                htmlCol2 += '</table>';
+                htmlCol3 += '</table>';
                 html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
                     '<div class="col-lg-4">' + htmlCol2 + '</div>' +
-                    '<div class="col-lg-4"></div></div>';
+                    '<div class="col-lg-4">' + htmlCol3 + '</div></div>';
+            }
+            /* Add model run analytics visualizations for successful model runs */
+            if (data.state === 'SUCCESS') {
+                var visWidgets = getModelRunWidgets(api, data);
+                if (visWidgets.length > 0) {
+                    for (let i = 0; i < visWidgets.length; i++) {
+                        html += visWidgets[i].html();
+                    }
+                }
             }
             var infoModal = new InfoModalForm('mrInfoModal');
             html += infoModal.html();
@@ -433,6 +452,12 @@ function showModelRun(url, api) {
                     })('mrParaInfo' + i, para, infoModal);
                 }
             }
+            /* Show visualizations for successfule model runs */
+            if (data.state === 'SUCCESS') {
+                for (let i = 0; i < visWidgets.length; i++) {
+                    visWidgets[i].show();
+                }
+            }
         },
         error: function(xhr, status, error) {
             if (xhr.responseText) {
@@ -446,6 +471,12 @@ function showModelRun(url, api) {
 
 function showSelectedModelParameter(experiment, api, modelId) {
     var model = getModel(api.models, modelId);
+    // Set model description (if present)
+    if (model.description) {
+        $('#modelDescription').html(model.description);
+    } else {
+        $('#modelDescription').html('No description available.');
+    }
     var html = '<table class="options-form">';
     for (var i = 0; i < model.parameters.length; i++) {
         var para = model.parameters[i];

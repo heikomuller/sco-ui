@@ -6,41 +6,55 @@ var API = function(data) {
     // API overview request response
     this.data = data;
     /**
+     * Homepage content
+     */
+    this.homePageContent = data.overview;
+    /**
      * List of parameter definitions for image groups.
      */
     this.imageGroupParameters = [];
-    for (var i = 0; i < data.images.length; i++) {
-        this.imageGroupParameters.push(new ParameterDef(data.images[i]))
+    for (let i = 0; i < data.resources.imageGroupOptions.length; i++) {
+        this.imageGroupParameters.push(
+            new ParameterDef(data.resources.imageGroupOptions[i])
+        )
     }
     /**
      * List of models
      */
     this.models = [];
-    for (var i = 0; i < data.models.length; i++) {
-        var m = data.models[i];
-        var model = {'id' : m.id, 'name' : m.name, 'description' : m.description};
+    for (let i = 0; i < data.resources.models.length; i++) {
+        var m = data.resources.models[i];
+        var model = {'id' : m.id, 'name' : m.name,};
+        // Add model description if defined in object properties
+        for (let prop of m.properties) {
+            if (prop.key === 'description') {
+                model['description'] = prop.value;
+            }
+        }
         var parameters = [];
         for (var p = 0; p < m.parameters.length; p++) {
             parameters.push(new ParameterDef(m.parameters[p]));
         }
         model['parameters'] = parameters;
         this.models.push(model);
-    }
+    };
+    /**
+     * List of widgets. Each widget is expected to contain the following fields:
+     *
+     * - engine: VEGALIGHT
+     * - resource: Defines that input resource required to display the widget
+     * - specification: Engine specific visualization specification
+     * - title: Widget title
+     */
+     this.widgets = [];
+     for (let i = 0; i < data.resources.widgets.length; i++) {
+         this.widgets.push(data.resources.widgets[i]);
+     }
+     this.widgets.sort(function(w1, w2){return w1.sortOrder - w2.sortOrder});
 };
 
 API.prototype = {
     constructor: API,
-    /**
-     * Get API resource descriptor with given identifier.
-     */
-    descriptor : function(id) {
-        for (var i = 0; i < this.data.descriptors.length; i++) {
-            var desc = this.data.descriptors[i];
-            if (desc.id === id) {
-                return desc;
-            }
-        }
-    },
     getCreateExperimentUrl : function() {
         return getHATEOASReference('experiments.create', this.data.links);
     },

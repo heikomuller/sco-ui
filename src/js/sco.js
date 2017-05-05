@@ -40,6 +40,8 @@ function initApp(url) {
         contentType: 'application/json',
         success: function(data) {
             var api = new API(data);
+            // Set page title
+            document.title = data.title;
             // Set onclick handlers for navigation items in sidebar and navbar
             var experimentsLinks = [$LI_EXPERIMENTS, $NAV_EXPERIMENTS];
             for (var i = 0; i < experimentsLinks.length; i++) {
@@ -95,60 +97,12 @@ function showHomePage(api) {
     sidebarSetActive($LI_HOME);
     showHomeHeadline(api);
     var html = '<div class="row"><div class="col-lg-12">';
-    var overview = api.descriptor('overview');
+    var overview = api.homePageContent;
     if (overview) {
-        html += new InfoPanel(overview.title, overview.text).html();
-    }
-    html += '</div></div>';
-    html += '<div class="row"><div class="col-lg-12">';
-    var subjects = api.descriptor('subjects');
-    if (subjects) {
-        html += new Panel(
-            subjects.title + '<button type="button" class="btn btn-default pull-right" id="btn-subjects">Show</button>',
-            subjects.text,
-            4
-        ).html();
-    }
-    var images = api.descriptor('images');
-    if (images) {
-        html += new Panel(
-            images.title + '<button type="button" class="btn btn-default pull-right" id="btn-images">Show</button>',
-            images.text,
-            4
-        ).html();
-    }
-    var experiments = api.descriptor('experiments');
-    if (experiments) {
-        html += new Panel(
-            experiments.title + '<button type="button" class="btn btn-default pull-right" id="btn-experiments">Show</button>',
-            experiments.text,
-            4
-        ).html();
+        html += new InfoPanel(overview.title, overview.content).html();
     }
     html += '</div></div>';
     $('#' + $EL_CONTENT).html(html);
-    // Set onclick handlers for buttons in info panels
-    if (subjects) {
-        (function(api) {
-            $('#btn-subjects').click(function() {
-                showSubjectsPage(api);
-            });
-        })(api);
-    }
-    if (images) {
-        (function(api) {
-            $('#btn-images').click(function() {
-                showImageGroupsPage(api);
-            });
-        })(api);
-    }
-    if (experiments) {
-        (function(api) {
-            $('#btn-experiments').click(function() {
-                showExperimentsPage(api);
-            });
-        })(api);
-    }
     return false;
 };
 
