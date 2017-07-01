@@ -16,3 +16,7 @@
 
 * Adopt to changes in the Server API
 * Add visualization widgets for successful model runs
+
+### 0.4.0 - 2017-07-01
+
+* Adjust to changes in the Web API regarding models and widgets

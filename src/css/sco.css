@@ -231,6 +231,14 @@ span.default-value {
     padding-top: 20px;
 }
 
+.connect {
+    color: #3b4151;
+    font-size: 12px;
+    font-weight: 300 !important;
+    font-family: Source Code Pro,monospace;
+    margin-top: 20px;
+}
+
 /*
  * LINKS
  */

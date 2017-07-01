@@ -1,13 +1,5 @@
-/**
- * Get model with given id from list of models.
- */
-function getModel(models, id) {
-    for (var i = 0; i < models.length; i++) {
-        if (id === models[i].id) {
-            return models[i];
-        }
-    }
-};
+// Global variable containing the model that is currently being displayed
+var model = null;
 
 /**
  * Show content for experiments listing page.
@@ -47,49 +39,80 @@ function showExperimentsPage(api) {
 };
 
 function showCreateModelRunPage(experiment, api) {
-    /* COLUMN 1 */
-    var col1Html = '<p class="attribute-label">Experiment</p>';
-    col1Html += '<p class="attribute-value">' + experiment.name + '</p>';
-    col1Html += '<p class="attribute-label">Name</p>';
-    col1Html += '<div class="attribute-value">';
-    col1Html += '<input id="txtRunName" type="text" class="form-control" placeholder="Name for Model Run">';
-    col1Html += '</div>';
-    col1Html += '<p class="attribute-label">Description</p>';
-    col1Html += '<div class="attribute-value">';
-    col1Html += '<input id="txtRunDescription" type="text" class="form-control" placeholder="Description for Model Run">';
-    col1Html += '</div>';
-    /* COLUMN 2 */
-    var col2Html = '<p class="attribute-label">Model</p>';
-    col2Html += '<div class="attribute-value">';
-    col2Html += '<select class="form-control" id="cboModel">';
-    for (var i = 0; i < api.models.length; i++) {
-        var model = api.models[i];
-        col2Html += '<option value="' + model.id + '">' + model.name + '</option>';
-    }
-    col2Html += '</select>';
-    col2Html += '<p class="attribute-value" id="modelDescription"></p>';
-    col2Html += '</div>';
-    /* COLUMN 3 */
-    var col3Html = '<p class="attribute-label">Parameter</p>';
-    col3Html += '<div class="attribute-value" id="modelParameterSection"></div>';
-    col3Html += '<div class="button-row pull-right">';
-    col3Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
-    col3Html += '&nbsp;&nbsp;&nbsp;';
-    col3Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
-    col3Html += '</div>';
-    html = '<div class="row"><div class="col-lg-4">' + col1Html + '</div>' +
-        '<div class="col-lg-4">' + col2Html + '</div>' +
-        '<div class="col-lg-4">' + col3Html + '</div></div>';
-    // Display content
-    sidebarSetActive('');
-    showModelRunHeadline('New ...', experiment, api);
-    $('#' + $EL_CONTENT).html(new Panel('Run Predictive Model', html).html());
-    // Assign onclick handler
-    (function(experiment, api){
-        $('#cboModel').change(function(){
-            showSelectedModelParameter(experiment, api, $('#cboModel').val());
-        });
-    })(experiment, api);
+    // Reset the global model variable
+    model = null;
+    let modelsUrl = getHATEOASReference('models.list', api.data.links)
+    $.ajax({
+        url: modelsUrl,
+        type: 'GET',
+        contentType: 'application/json',
+        success : function(data) {
+            const models = data.items;
+            /* COLUMN 1 */
+            var col1Html = '<p class="attribute-label">Experiment</p>';
+            col1Html += '<p class="attribute-value">' + experiment.name + '</p>';
+            col1Html += '<p class="attribute-label">Name</p>';
+            col1Html += '<div class="attribute-value">';
+            col1Html += '<input id="txtRunName" type="text" class="form-control" placeholder="Name for Model Run">';
+            col1Html += '</div>';
+            col1Html += '<p class="attribute-label">Description</p>';
+            col1Html += '<div class="attribute-value">';
+            col1Html += '<input id="txtRunDescription" type="text" class="form-control" placeholder="Description for Model Run">';
+            col1Html += '</div>';
+            /* COLUMN 2 */
+            var col2Html = '<p class="attribute-label">Model</p>';
+            col2Html += '<div class="attribute-value">';
+            col2Html += '<select class="form-control" id="cboModel">';
+            for (var i = 0; i < models.length; i++) {
+                var model = models[i];
+                col2Html += '<option value="' + getHATEOASReference('self', model.links) + '">' + model.name + '</option>';
+            }
+            col2Html += '</select>';
+            col2Html += '<p class="attribute-value" id="modelDescription"></p>';
+            col2Html += '</div>';
+            /* COLUMN 3 */
+            var col3Html = '<p class="attribute-label">Parameter</p>';
+            col3Html += '<div class="attribute-value" id="modelParameterSection"></div>';
+            col3Html += '<div class="button-row pull-right">';
+            col3Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
+            col3Html += '&nbsp;&nbsp;&nbsp;';
+            col3Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
+            col3Html += '</div>';
+            html = '<div class="row"><div class="col-lg-4">' + col1Html + '</div>' +
+                '<div class="col-lg-4">' + col2Html + '</div>' +
+                '<div class="col-lg-4">' + col3Html + '</div></div>';
+            // Display content
+            sidebarSetActive('');
+            showModelRunHeadline('New ...', experiment, api);
+            $('#' + $EL_CONTENT).html(new Panel('Run Predictive Model', html).html());
+            // Assign onclick handler
+            (function(experiment, api){
+                $('#cboModel').change(function(){
+                    showSelectedModelParameter(experiment, $('#cboModel').val());
+                });
+            })(experiment, models);
+            (function(experiment, api) {
+                $('#btnSubmitRun').click(function() {
+                    submitModelRun(experiment, api);
+                });
+            })(experiment, api);
+            (function(experiment, api) {
+                $('#btnRunCancel').click(function() {
+                    showExperiment(getHATEOASReference('self', experiment.links), api);
+                });
+            })(experiment, api);
+            showSelectedModelParameter(experiment, getHATEOASReference('self', models[0].links));
+        },
+        error: function(xhr, status, error) {
+            if (xhr.responseText) {
+                var err = JSON.parse(xhr.responseText).message;
+            } else {
+                var err = 'There was an error creating the new run';
+            }
+            alert(err);
+        }
+    });
+    /*
     (function(experiment, api) {
         $('#btnSubmitRun').click(function() {
             var name = $('#txtRunName').val().trim();
@@ -145,7 +168,7 @@ function showCreateModelRunPage(experiment, api) {
         });
     })(experiment, api);
     // Show parameter for default model
-    showSelectedModelParameter(experiment, api, api.models[0].id);
+    */
 };
 
 /**
@@ -374,7 +397,7 @@ function showModelRun(url, api) {
             } else {
                 htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
             }
-            var model = getModel(api.models, data.model.id);
+            const model = new PredictiveModel(data.model);
             if (data.state === 'FAILED') {
                 var content = '<p class="attribute-label">Errors</p><pre>';
                 for (var i = 0; i < data.errors.length; i++) {
@@ -469,37 +492,100 @@ function showModelRun(url, api) {
     return false;
 };
 
-function showSelectedModelParameter(experiment, api, modelId) {
-    var model = getModel(api.models, modelId);
-    // Set model description (if present)
-    if (model.description) {
-        $('#modelDescription').html(model.description);
-    } else {
-        $('#modelDescription').html('No description available.');
+function showSelectedModelParameter(experiment, modelUrl) {
+    $('#modelParameterSection').html(showSpinnerHtml());
+    $.ajax({
+        url: modelUrl,
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(data) {
+            model = new PredictiveModel(data);
+            // Set model description (if present)
+            if (model.description) {
+                $('#modelDescription').html(model.description);
+                $('#modelDescription').show();
+            } else {
+                $('#modelDescription').hide();
+            }
+            var html = '<table class="options-form">';
+            for (let i = 0; i < model.parameters.length; i++) {
+                var para = model.parameters[i];
+                html += '<tr>';
+                html += '<td class="op-name">' + para.htmlTitle('mpsOpInfo' + i) + '</td>';
+                html += '<td class="op-ctrl">';
+                html += para.htmlControl('mps' + para.id, []);
+                html += '</td>';
+                html += '</tr>';
+            }
+            html += '</table>';
+            const infoModal = new InfoModalForm('mpsInfoModal');
+            html += infoModal.html();
+            $('#modelParameterSection').html(html);
+            // Assign info button onclick handler
+            for (let i = 0; i < model.parameters.length; i++) {
+                let para = model.parameters[i];
+                if (para.description !== '') {
+                    (function(elementId, para, infoModal) {
+                        $('#' + elementId).click(function() {
+                            infoModal.show(para.name, para.description);
+                        });
+                    })('mpsOpInfo' + i, para, infoModal);
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            if (xhr.responseText) {
+                var err = JSON.parse(xhr.responseText).message;
+            }
+            $('#' + $EL_CONTENT).html(showErrorMessageHtml(err));
+        }
+    });
+};
+
+function submitModelRun(experiment, api) {
+    let name = $('#txtRunName').val().trim();
+    if (!name) {
+        alert('Please provide a name for the new model run.');
+        return false;
     }
-    var html = '<table class="options-form">';
+    const config = {'name' : name};
+    const description = $('#txtRunDescription').val().trim();
+    if (description) {
+        config['properties'] = [{'key':'description', 'value':description}];
+    }
+    if (!model) {
+        alert('Please select a model to run.');
+        return false;
+    }
+    config['model'] = model.id;
+    config['arguments'] = [];
     for (var i = 0; i < model.parameters.length; i++) {
         var para = model.parameters[i];
-        html += '<tr>';
-        html += '<td class="op-name">' + para.htmlTitle('mpsOpInfo' + i) + '</td>';
-        html += '<td class="op-ctrl">';
-        html += para.htmlControl('mps' + para.id, []);
-        html += '</td>';
-        html += '</tr>';
-    }
-    html += '</table>';
-    var infoModal = new InfoModalForm('mpsInfoModal');
-    html += infoModal.html();
-    $('#modelParameterSection').html(html);
-    // Assign info button onclick handler
-    for (var i = 0; i < model.parameters.length; i++) {
-        var para = model.parameters[i];
-        if (para.description !== '') {
-            (function(elementId, para, infoModal) {
-                $('#' + elementId).click(function() {
-                    infoModal.show(para.name, para.description);
-                });
-            })('mpsOpInfo' + i, para, infoModal);
+        var value = para.controlValue('mps' + para.id);
+        if (value !== '') {
+            if (!para.isValid(value)) {
+                alert('Invalid value for ' + para.name + ': \'' + value + '\' not of expected type \'' + para.type.name + '\'');
+                return false;
+            }
+            config['arguments'].push({'name' : para.id, 'value' : value});
         }
     }
-};
+    $.ajax({
+        url: getHATEOASReference('predictions.run', experiment.links),
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(config),
+        success : function(data) {
+            showExperiment(getHATEOASReference('self', experiment.links), api);
+        },
+        error: function(xhr, status, error) {
+            if (xhr.responseText) {
+                var err = JSON.parse(xhr.responseText).message;
+            } else {
+                var err = 'There was an error creating the new run';
+            }
+            alert(err);
+        }
+    });
+    showExperiment(getHATEOASReference('self', experiment.links), api);
+}

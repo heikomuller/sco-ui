@@ -218,20 +218,21 @@ a.highlight-link:hover {
 }
 
 .panel-heading {
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 300;
 	letter-spacing: 0.025em;
-	height: 66px;
-	line-height: 45px;
+	height: 40px;
+	line-height: 40px;
     text-transform: uppercase;
+    padding: 0px 10px;
 }
 .panel-default .panel-heading {
 	background: #e0e0e0;
-	color: #2a2b2c;
+	color: #3b4151;
 }
 .panel-info .panel-heading {
-        background: #e0e0e0;
-        color: #2a2b2c;
+    background: #e0e0e0;
+    color: #2a2b2c;
 	border-bottom: solid 0px; #fff;
 	font-size: 2em;
 	font-weight: bold;

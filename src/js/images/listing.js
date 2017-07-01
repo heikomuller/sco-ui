@@ -115,9 +115,13 @@ function listImages(elementId, url, modal) {
             var images = data.items;
             for (var i = 0; i < images.length; i++) {
                 var img = images[i];
+                let img_name = img.folder + img.name;
+                if (img_name.startsWith('/')) {
+                    img_name = img_name.substring(1);
+                }
                 html += '<a href="#" class="list-group-item" id="' + elementId + 'Img' + i + '">' +
                     '<i class="fa fa-picture-o" aria-hidden="true"></i>' +
-                    '&nbsp;&nbsp;' + img.folder + img.name + '</a>'
+                    '&nbsp;&nbsp;' + img_name + '</a>'
             }
             html += '</ul>';
             $('#' + elementId).html(html);

@@ -6,6 +6,9 @@ var $EL_CONTENT = 'main-content';
 var $EL_PANEL = 'main-panel';
 var $EL_TITLE = 'main-title';
 
+var $EL_APIDOC = 'apiDocumentationLink';
+var $EL_CONNECT_INFO = 'connectionInfo';
+
 /**
  * Navbar elements
  */
@@ -42,6 +45,15 @@ function initApp(url) {
             var api = new API(data);
             // Set page title
             document.title = data.title;
+            // Set API documentation link
+            const apiDocRef = getHATEOASReference('doc', data.links);
+            $('#' + $EL_APIDOC).html('<a href="' + apiDocRef + '" target="_blank"><i class="fa fa-info fa-fw"></i> API Documentation</a>');
+            // Set connection information
+            const apiDocLink = '<a class="connect" href="' + apiDocRef + '"><i class="fa fa-book"/></a>';
+            let connectInfo = '<a class="connect" href="' + getHATEOASReference('self', data.links) + '">' + data.name + '</a>';
+            connectInfo = '[ Connected to ' + connectInfo + ' ' + apiDocLink + ' ]';
+            connectInfo = '<span class="connect">' + connectInfo + '</span>';
+            $('#' + $EL_CONNECT_INFO).html(connectInfo);
             // Set onclick handlers for navigation items in sidebar and navbar
             var experimentsLinks = [$LI_EXPERIMENTS, $NAV_EXPERIMENTS];
             for (var i = 0; i < experimentsLinks.length; i++) {
