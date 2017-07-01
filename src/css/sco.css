@@ -102,11 +102,11 @@ p.breadcrumb-headline {
 
 #modelDescription {
     padding: 10px;
-    border: 1px solid #acecf9;
-    border-radius: 6px;
+    border: 1px solid #cecece;
+    border-radius: 4px;
     font-style: italic;
     color: #585858;
-    background: #effffe;
+    background: #f3f3f3;
 }
 
 
@@ -139,7 +139,7 @@ div.file-dropzone {
 }
 
 .button-row {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 div.dz-error-message {
@@ -237,6 +237,10 @@ span.default-value {
     font-weight: 300 !important;
     font-family: Source Code Pro,monospace;
     margin-top: 20px;
+}
+
+span.attachment-icon {
+    padding-right: 10px;
 }
 
 /*

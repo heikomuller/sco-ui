@@ -70,17 +70,15 @@ function showCreateModelRunPage(experiment, api) {
             col2Html += '</select>';
             col2Html += '<p class="attribute-value" id="modelDescription"></p>';
             col2Html += '</div>';
-            /* COLUMN 3 */
-            var col3Html = '<p class="attribute-label">Parameter</p>';
-            col3Html += '<div class="attribute-value" id="modelParameterSection"></div>';
-            col3Html += '<div class="button-row pull-right">';
-            col3Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
-            col3Html += '&nbsp;&nbsp;&nbsp;';
-            col3Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
-            col3Html += '</div>';
+            col2Html += '<p class="attribute-label">Parameter</p>';
+            col2Html += '<div class="attribute-value" id="modelParameterSection"></div>';
+            col2Html += '<div class="button-row pull-right">';
+            col2Html += '<button class="btn btn-primary" id="btnSubmitRun">Submit</button>';
+            col2Html += '&nbsp;&nbsp;&nbsp;';
+            col2Html += '<button class="btn btn-default" id="btnRunCancel">Cancel</button>';
+            col2Html += '</div>';
             html = '<div class="row"><div class="col-lg-4">' + col1Html + '</div>' +
-                '<div class="col-lg-4">' + col2Html + '</div>' +
-                '<div class="col-lg-4">' + col3Html + '</div></div>';
+                '<div class="col-lg-8">' + col2Html + '</div>';
             // Display content
             sidebarSetActive('');
             showModelRunHeadline('New ...', experiment, api);
@@ -112,63 +110,6 @@ function showCreateModelRunPage(experiment, api) {
             alert(err);
         }
     });
-    /*
-    (function(experiment, api) {
-        $('#btnSubmitRun').click(function() {
-            var name = $('#txtRunName').val().trim();
-            if (!name) {
-                alert('Please provide a name for the new model run.');
-                return false;
-            }
-            var config = {'name' : name};
-            var description = $('#txtRunDescription').val().trim();
-            if (description) {
-                config['properties'] = [{'key':'description', 'value':description}];
-            }
-            var model = getModel(api.models, $('#cboModel').val());
-            if (!model) {
-                alert('Please select a model to run.');
-                return false;
-            }
-            config['model'] = model.id;
-            config['arguments'] = [];
-            for (var i = 0; i < model.parameters.length; i++) {
-                var para = model.parameters[i];
-                var value = para.controlValue('mps' + para.id);
-                if (value !== '') {
-                    if (!para.isValid(value)) {
-                        alert('Invalid value for ' + para.name + ': \'' + value + '\' not of expected type \'' + para.type.name + '\'');
-                        return false;
-                    }
-                    config['arguments'].push({'name' : para.id, 'value' : value});
-                }
-            }
-            $.ajax({
-                url: getHATEOASReference('predictions.run', experiment.links),
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(config),
-                success : function(data) {
-                    showExperiment(getHATEOASReference('self', experiment.links), api);
-                },
-                error: function(xhr, status, error) {
-                    if (xhr.responseText) {
-                        var err = JSON.parse(xhr.responseText).message;
-                    } else {
-                        var err = 'There was an error creating the new run';
-                    }
-                    alert(err);
-                }
-            });
-        });
-    })(experiment, api);
-    (function(experiment, api) {
-        $('#btnRunCancel').click(function() {
-            showExperiment(getHATEOASReference('self', experiment.links), api);
-        });
-    })(experiment, api);
-    // Show parameter for default model
-    */
 };
 
 /**
@@ -393,6 +334,24 @@ function showModelRun(url, api) {
             htmlCol1 += '</table>';
             //html += '<p class="attribute-value"><a id="expSubjectRef" class="internal-link" href="#/">' + data.subject.name + '</a></p>';
             if (data.state === 'SUCCESS') {
+                htmlCol1 += '<p class="attribute-label">Attachments</p>';
+                if (data.attachments.length === 0) {
+                    htmlCol1 += '<p class="attribute-value">None</p>';
+                } else {
+                    for (let i = 0; i < data.attachments.length; i++) {
+                        const afile = data.attachments[i];
+                        let alink = afile.id;
+                        let aicon = 'file-o';
+                        if (afile.mimeType === 'application/pdf') {
+                            aicon = 'file-pdf-o';
+                        } else if (afile.mimeType === 'text/csv') {
+                            aicon = 'file-text-o'
+                        }
+                        alink = '<a class="action-link" href="' + getHATEOASReference('download', afile.links) + '">' + alink + '</a>';
+                        alink = '<span class="attachment-icon"><i class="fa fa-' + aicon + '"/></span>' + alink;
+                        htmlCol1 += '<p class="attachment">' + alink + '</p>';
+                    }
+                }
                 htmlCol1 += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
             } else {
                 htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
@@ -415,20 +374,18 @@ function showModelRun(url, api) {
                     htmlCol2 += model.description;
                     htmlCol2 += '</p>';
                 }
-                /* COLUMN 3 */
-                var htmlCol3 = '<p class="attribute-label">Parameter</p>';
-                htmlCol3 += '<table class="properties">';
+                htmlCol2 += '<p class="attribute-label">Parameter</p>';
+                htmlCol2 += '<table class="properties">';
                 for (var i = 0; i < model.parameters.length; i++) {
                     var para = model.parameters[i];
-                    htmlCol3 += '<tr>';
-                    htmlCol3 += '<td class="op-name">' + para.htmlTitle('mrParaInfo' + i) + '</td>';
-                    htmlCol3 += '<td class="op-value">' + para.htmlValue(data.arguments) + '</td>';
-                    htmlCol3 += '</tr>';
+                    htmlCol2 += '<tr>';
+                    htmlCol2 += '<td class="op-name">' + para.htmlTitle('mrParaInfo' + i) + '</td>';
+                    htmlCol2 += '<td class="op-value">' + para.htmlValue(data.arguments) + '</td>';
+                    htmlCol2 += '</tr>';
                 }
-                htmlCol3 += '</table>';
+                htmlCol2 += '</table>';
                 html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
-                    '<div class="col-lg-4">' + htmlCol2 + '</div>' +
-                    '<div class="col-lg-4">' + htmlCol3 + '</div></div>';
+                    '<div class="col-lg-8">' + htmlCol2 + '</div>';
             }
             /* Add model run analytics visualizations for successful model runs */
             if (data.state === 'SUCCESS') {
