@@ -316,7 +316,7 @@ function showModelRun(url, api) {
                     )
                 }
             );
-            var htmlCol1 = name.html();
+            let htmlCol1 = name.html();
             htmlCol1 += description.html();
             htmlCol1 += '<p class="attribute-label">State</p>';
             htmlCol1 += '<p class="attribute-value">' + data.state + '</p>';
@@ -349,6 +349,7 @@ function showModelRun(url, api) {
                         }
                         alink = '<a class="action-link" href="' + getHATEOASReference('download', afile.links) + '">' + alink + '</a>';
                         alink = '<span class="attachment-icon"><i class="fa fa-' + aicon + '"/></span>' + alink;
+                        alink += ' (<span class="filesize">' + filesize(afile.filesize) + '</span>)';
                         htmlCol1 += '<p class="attachment">' + alink + '</p>';
                     }
                 }
@@ -357,6 +358,7 @@ function showModelRun(url, api) {
                 htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
             }
             const model = new PredictiveModel(data.model);
+            let html = '';
             if (data.state === 'FAILED') {
                 var content = '<p class="attribute-label">Errors</p><pre>';
                 for (var i = 0; i < data.errors.length; i++) {
@@ -385,15 +387,17 @@ function showModelRun(url, api) {
                 }
                 htmlCol2 += '</table>';
                 html = '<div class="row"><div class="col-lg-4">' + htmlCol1 + '</div>' +
-                    '<div class="col-lg-8">' + htmlCol2 + '</div>';
+                    '<div class="col-lg-8">' + htmlCol2 + '</div></div>';
             }
             /* Add model run analytics visualizations for successful model runs */
             if (data.state === 'SUCCESS') {
                 var visWidgets = getModelRunWidgets(api, data);
                 if (visWidgets.length > 0) {
+                    html += '<div class="widgets">';
                     for (let i = 0; i < visWidgets.length; i++) {
                         html += visWidgets[i].html();
                     }
+                    html += '</div>';
                 }
             }
             var infoModal = new InfoModalForm('mrInfoModal');

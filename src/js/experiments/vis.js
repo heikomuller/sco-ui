@@ -64,7 +64,7 @@ function getModelRunWidgets(api, modelRun) {
                 new VegaLiteWidget(
                     'vegalite' + visWidgets.length,
                     widget.title,
-                    widget.specification
+                    widget.code
                 )
             );
         }

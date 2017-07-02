@@ -221,6 +221,10 @@ td.prop-name {
 span.default-value {
     color: #a0a0a0;
 }
+
+.widgets {
+    margin-top: 20px;
+}
 /*
  * FOOTER
  */

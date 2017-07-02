@@ -20,3 +20,7 @@
 ### 0.4.0 - 2017-07-01
 
 * Adjust to changes in the Web API regarding models and widgets
+
+### 0.5.0 - 2017-07-02
+
+* Add widgets to pages for successful model runs
