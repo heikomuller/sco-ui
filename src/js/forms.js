@@ -86,7 +86,8 @@ FileUploadForm.prototype = {
             completeCallback(api);
         });
         (function(elementId, dzone) {
-            $('#' + elementId).click(function() {
+            $('#' + elementId).click(function(event) {
+                event.preventDefault();
                 dzone.removeAllFiles(true);
             });
         })(this.elementId + 'ActionsCancel', dzone);
@@ -132,18 +133,21 @@ EditableAttribute.prototype = {
         html += '<input id="' + this.elementId + 'Text" type="text" class="form-control" value="' + this.value + '">';
         html += showButtonRowHtml(this.elementId);
         (function(attr, html) {
-            $('#' + attr.elementId + 'Edit').click(function() {
+            $('#' + attr.elementId + 'Edit').click(function(event) {
+                event.preventDefault();
                 $('#' + attr.elementId).html(html);
                 // Set onclick handler for save button
                 (function(attr) {
-                    $('#' + attr.elementId + 'BtnSave').click(function() {
+                    $('#' + attr.elementId + 'BtnSave').click(function(event) {
+                        event.preventDefault();
                         var value =  $('#' + attr.elementId + 'Text').val().trim();
                         attr.update(value);
                     });
                 })(attr);
                 // Set onclick handler for close button
                 (function(attr) {
-                    $('#' + attr.elementId + 'BtnClose').click(function() {
+                    $('#' + attr.elementId + 'BtnClose').click(function(even) {
+                        event.preventDefault();
                         var html = '<p class="attribute-value">';
                         if (attr.value === '') {
                             html += '&nbsp;';
@@ -205,7 +209,8 @@ OptionsForm.prototype = {
             var op = this.def[i];
             if (op.description !== '') {
                 (function(elementId, op, infoModal) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         infoModal.show(op.name, op.description);
                     });
                 })(elementId + i, op, this.infoModal);
@@ -237,11 +242,13 @@ OptionsForm.prototype = {
         html += '</table>';
         html += showButtonRowHtml(this.elementId);
         (function(form, html) {
-            $('#' + form.elementId + 'Edit').click(function() {
+            $('#' + form.elementId + 'Edit').click(function(event) {
+                event.preventDefault();
                 $('#' + form.elementId).html(html);
                 // Set onclick handler for save button
                 (function(form) {
-                    $('#' + form.elementId + 'BtnSave').click(function() {
+                    $('#' + form.elementId + 'BtnSave').click(function(event) {
+                        event.preventDefault();
                         var values =  [];
                         for (var i = 0; i < form.def.length; i++) {
                             var op = form.def[i];
@@ -261,7 +268,8 @@ OptionsForm.prototype = {
                 form.assignInfoButtonsOnClickHandler(form.elementId + 'OpEditInfo');
                 // Set onclick handler for close button
                 (function(form) {
-                    $('#' + form.elementId + 'BtnClose').click(function() {
+                    $('#' + form.elementId + 'BtnClose').click(function(event) {
+                        event.preventDefault();
                         $('#' + form.elementId).html(form.table());
                         form.assignInfoButtonsOnClickHandler(form.elementId + 'OpInfo');
                     });

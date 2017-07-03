@@ -117,12 +117,14 @@ function showImageGroup(url, api) {
             description.onclick();
             options.onclick();
             (function(name, url) {
-                $('#deleteObj').click(function() {
+                $('#deleteObj').click(function(event) {
+                    event.preventDefault();
                     deleteObject('image group', name, url, function() {showImageGroupsPage(api);});
                 });
             })(data.name, getHATEOASReference('delete', data.links), api);
             (function(api) {
-                $('#closePanel').click(function() {
+                $('#closePanel').click(function(event) {
+                    event.preventDefault();
                     showImageGroupsPage(api);
                 });
             })(api);

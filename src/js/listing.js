@@ -52,7 +52,8 @@ ObjectListing.prototype = {
                         var col = self.columns[j];
                         if (col.onclick) {
                             (function(col, item, api) {
-                                $('#' + col.id + '-' + i).click(function() {
+                                $('#' + col.id + '-' + i).click(function(event) {
+                                    event.preventDefault();
                                     col.onclick.handler(item, api);
                                 });
                             })(col, item, self.api);

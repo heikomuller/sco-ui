@@ -91,12 +91,14 @@ function showSubject(url, api) {
             name.onclick();
             description.onclick();
             (function(name, url) {
-                $('#deleteObj').click(function() {
+                $('#deleteObj').click(function(event) {
+                    event.preventDefault();
                     deleteObject('subject', name, url, function() {showSubjectsPage(api);});
                 });
             })(data.name, getHATEOASReference('delete', data.links), api);
             (function(api) {
-                $('#closePanel').click(function() {
+                $('#closePanel').click(function(event) {
+                    event.preventDefault();
                     showSubjectsPage(api);
                 });
             })(api);

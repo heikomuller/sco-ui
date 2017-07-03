@@ -58,7 +58,8 @@ function initApp(url) {
             var experimentsLinks = [$LI_EXPERIMENTS, $NAV_EXPERIMENTS];
             for (var i = 0; i < experimentsLinks.length; i++) {
                 (function(elementId, api) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         showExperimentsPage(api);
                     });
                 })(experimentsLinks[i], api);
@@ -66,7 +67,8 @@ function initApp(url) {
             var homeLinks = [$LI_HOME, $NAV_HOME];
             for (var i = 0; i < homeLinks.length; i++) {
                 (function(elementId, api) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         showHomePage(api);
                     });
                 })(homeLinks[i], api);
@@ -74,7 +76,8 @@ function initApp(url) {
             var imageLinks = [$LI_IMAGES, $NAV_IMAGES];
             for (var i = 0; i < imageLinks.length; i++) {
                 (function(elementId, api) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         showImageGroupsPage(api);
                     });
                 })(imageLinks[i], api);
@@ -82,7 +85,8 @@ function initApp(url) {
             var subjectLinks = [$LI_SUBJECTS, $NAV_SUBJECTS];
             for (var i = 0; i < subjectLinks.length; i++) {
                 (function(elementId, api) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         showSubjectsPage(api);
                     });
                 })(subjectLinks[i], api);

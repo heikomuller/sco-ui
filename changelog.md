@@ -24,3 +24,7 @@
 ### 0.5.0 - 2017-07-02
 
 * Add widgets to pages for successful model runs
+
+### 0.5.1 - 2017-07-03
+
+* Prevent default on click events

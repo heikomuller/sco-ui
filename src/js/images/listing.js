@@ -129,7 +129,8 @@ function listImages(elementId, url, modal) {
             for (var i = 0; i < images.length; i++) {
                 var img = images[i];
                 (function(elementId, imageIdx, filename, url, modal) {
-                    $('#' + elementId + 'Img' + imageIdx).click(function() {
+                    $('#' + elementId + 'Img' + imageIdx).click(function(event) {
+                        event.preventDefault();
                         modal.show(filename, url);
                     });
                 })(elementId, i, img.name, getHATEOASReference('download', img.links), modal);
@@ -148,7 +149,8 @@ function listImages(elementId, url, modal) {
 function setNavClickHandler(elementId, url, targetElementId, modal, callbackFunc) {
     if (url) {
         (function(elementId, url, targetElementId, callbackFunc) {
-            $('#' + elementId).click(function() {
+            $('#' + elementId).click(function(event) {
+                event.preventDefault();
                 modal.clear();
                 callbackFunc(targetElementId, url, modal);
             });

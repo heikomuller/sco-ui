@@ -90,12 +90,14 @@ function showCreateModelRunPage(experiment, api) {
                 });
             })(experiment, models);
             (function(experiment, api) {
-                $('#btnSubmitRun').click(function() {
+                $('#btnSubmitRun').click(function(event) {
+                    event.preventDefault();
                     submitModelRun(experiment, api);
                 });
             })(experiment, api);
             (function(experiment, api) {
-                $('#btnRunCancel').click(function() {
+                $('#btnRunCancel').click(function(event) {
+                    event.preventDefault();
                     showExperiment(getHATEOASReference('self', experiment.links), api);
                 });
             })(experiment, api);
@@ -228,7 +230,8 @@ function showExperiment(url, api) {
             description.onclick();
             if (data.fmri) {
                 (function(data, api) {
-                    $('#fMRIDelete').click(function() {
+                    $('#fMRIDelete').click(function(event) {
+                        event.preventDefault();
                         var name = data.fmri.name;
                         var url = getHATEOASReference('delete', data.fmri.links);
                         var experimentUrl = getHATEOASReference('self', data.links);
@@ -237,27 +240,32 @@ function showExperiment(url, api) {
                 })(data, api);
             }
             (function(url, api) {
-                $('#expSubjectRef').click(function() {
+                $('#expSubjectRef').click(function(event) {
+                    event.preventDefault();
                     showSubject(url, api);
                 });
             })(getHATEOASReference('self', data.subject.links), api);
             (function(url, api) {
-                $('#expImagesRef').click(function() {
+                $('#expImagesRef').click(function(event) {
+                    event.preventDefault();
                     showImageGroup(url, api);
                 });
             })(getHATEOASReference('self', data.images.links), api);
             (function(name, url) {
-                $('#deleteObj').click(function() {
+                $('#deleteObj').click(function(event) {
+                    event.preventDefault();
                     deleteObject('experiment', name, url, function() {showExperimentsPage(api);});
                 });
             })(data.name, getHATEOASReference('delete', data.links), api);
             (function(api) {
-                $('#closePanel').click(function() {
+                $('#closePanel').click(function(event) {
+                    event.preventDefault();
                     showExperimentsPage(api);
                 });
             })(api);
             (function(experiment, api) {
-                $('#createRunBtn').click(function() {
+                $('#createRunBtn').click(function(event) {
+                    event.preventDefault();
                     showCreateModelRunPage(experiment, api);
                 });
             })(data, api);
@@ -410,7 +418,8 @@ function showModelRun(url, api) {
             name.onclick();
             description.onclick();
             (function(name, url) {
-                $('#deleteObj').click(function() {
+                $('#deleteObj').click(function(event) {
+                    event.preventDefault();
                     deleteObject(
                         'prediction',
                         name,
@@ -422,7 +431,8 @@ function showModelRun(url, api) {
                 });
             })(data.name, getHATEOASReference('delete', data.links), api);
             (function(url, api) {
-                $('#closePanel').click(function() {
+                $('#closePanel').click(function(event) {
+                    event.preventDefault();
                     showExperiment(url, api);
                 });
             })(getHATEOASReference('self', data.experiment.links), api);
@@ -430,7 +440,8 @@ function showModelRun(url, api) {
                 var para = model.parameters[i];
                 if (para.description !== '') {
                     (function(elementId, para, infoModal) {
-                        $('#' + elementId).click(function() {
+                        $('#' + elementId).click(function(event) {
+                            event.preventDefault();
                             infoModal.show(para.name, para.description);
                         });
                     })('mrParaInfo' + i, para, infoModal);
@@ -487,7 +498,8 @@ function showSelectedModelParameter(experiment, modelUrl) {
                 let para = model.parameters[i];
                 if (para.description !== '') {
                     (function(elementId, para, infoModal) {
-                        $('#' + elementId).click(function() {
+                        $('#' + elementId).click(function(event) {
+                            event.preventDefault();
                             infoModal.show(para.name, para.description);
                         });
                     })('mpsOpInfo' + i, para, infoModal);

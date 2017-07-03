@@ -26,7 +26,8 @@ Headline.prototype = {
             var breadcrumb = this.breadcrumbs[i];
             if (breadcrumb.link) {
                 (function(elementId, func) {
-                    $('#' + elementId).click(function() {
+                    $('#' + elementId).click(function(event) {
+                        event.preventDefault();
                         func();
                     });
                 })('breadcrumb-' + i, breadcrumb.link);

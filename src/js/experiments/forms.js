@@ -49,7 +49,8 @@ CreateExperimentForm.prototype = {
         this.load(this.api.getSubjectsListAllUrl(), 'cbo-experiment-subject');
         this.load(this.api.getImagesListAllUrl(), 'cbo-experiment-images');
         (function(form) {
-            $('#btn-submit-experiment-create').click(function() {
+            $('#btn-submit-experiment-create').click(function(event) {
+                event.preventDefault();
                 return form.submit(form.api);
             });
         })(this);
