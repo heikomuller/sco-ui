@@ -226,6 +226,14 @@ a.highlight-link:hover {
     text-transform: uppercase;
     padding: 0px 10px;
 }
+
+.home-panel-heading {
+    background: #cecece;
+	font-size: 18px;
+	font-weight: 700;
+    text-transform: uppercase;
+    padding: 20px;
+}
 .panel-default .panel-heading {
 	background: #e0e0e0;
 	color: #3b4151;

@@ -55,7 +55,7 @@ InfoPanel.prototype = {
     constructor: InfoPanel,
     html : function() {
         return '<div class="col-lg-' + this.cols + '"><div class="panel panel-info">' +
-                    '<div class="panel-heading">' + this.title + '</div>' +
+                    '<div class="home-panel-heading">' + this.title + '</div>' +
                     '<div class="panel-body panel-info">' +
                         this.body +
                     '</div>' +
