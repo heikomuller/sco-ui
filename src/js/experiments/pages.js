@@ -355,7 +355,8 @@ function showModelRun(url, api) {
                         } else if (afile.mimeType === 'text/csv') {
                             aicon = 'file-text-o'
                         }
-                        alink = '<a class="action-link" href="' + getHATEOASReference('download', afile.links) + '">' + alink + '</a>';
+                        const aUrl = getHATEOASReference('download', afile.links);
+                        alink = '<a class="action-link" href="' + aUrl + '" target="_blank">' + alink + '</a>';
                         alink = '<span class="attachment-icon"><i class="fa fa-' + aicon + '"/></span>' + alink;
                         alink += ' (<span class="filesize">' + filesize(afile.filesize) + '</span>)';
                         htmlCol1 += '<p class="attachment">' + alink + '</p>';

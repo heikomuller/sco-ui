@@ -28,3 +28,4 @@
 ### 0.5.1 - 2017-07-03
 
 * Prevent default on click events
+* Open attachments in new tab
