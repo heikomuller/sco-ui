@@ -42,12 +42,12 @@ function showExperimentsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Experiments',
             'icon' : 'fa-area-chart',
-            'link' : function() {showExperimentsPage(api);}
+            'link' : function() {showExperimentsPage(api, true);}
         }
     ]).show();
 };
@@ -57,12 +57,12 @@ function showExperimentHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Experiments',
             'icon' : 'fa-area-chart',
-            'link' : function() {showExperimentsPage(api);}
+            'link' : function() {showExperimentsPage(api, true);}
         },
         {
             'name' : name
@@ -74,7 +74,7 @@ function showHomeHeadline(api) {
     new Headline([{
         'name' : 'Home',
         'icon' : 'fa-home',
-        'link' : function() {showHomePage(api);}
+        'link' : function() {showHomePage(api, true);}
     }]).show();
 };
 
@@ -83,12 +83,12 @@ function showImageGroupsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Images',
             'icon' : 'fa-group',
-            'link' : function() {showImageGroupsPage(api);}
+            'link' : function() {showImageGroupsPage(api, true);}
         }
     ]).show();
 };
@@ -98,12 +98,12 @@ function showImageGroupHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Images',
             'icon' : 'fa-group',
-            'link' : function() {showImageGroupsPage(api);}
+            'link' : function() {showImageGroupsPage(api, true);}
         },
         {
             'name' : name
@@ -116,16 +116,16 @@ function showModelRunHeadline(name, experiment, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Experiments',
             'icon' : 'fa-area-chart',
-            'link' : function() {showExperimentsPage(api);}
+            'link' : function() {showExperimentsPage(api, true);}
         },
         {
             'name' : experiment.name,
-            'link' : function() {showExperiment(getHATEOASReference('self', experiment.links), api);}
+            'link' : function() {showExperiment(getHATEOASReference('self', experiment.links), api, true);}
         },
         {
             'name' : name
@@ -140,12 +140,12 @@ function showSubjectsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Subjects',
             'icon' : 'fa-group',
-            'link' : function() {showSubjectsPage(api);}
+            'link' : function() {showSubjectsPage(api, true);}
         }
     ]).show();
 };
@@ -155,12 +155,12 @@ function showSubjectHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api);}
+            'link' : function() {showHomePage(api, true);}
         },
         {
             'name' : 'Subjects',
             'icon' : 'fa-group',
-            'link' : function() {showSubjectsPage(api);}
+            'link' : function() {showSubjectsPage(api, true);}
         },
         {
             'name' : name

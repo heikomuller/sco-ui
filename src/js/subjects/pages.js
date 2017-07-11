@@ -3,9 +3,12 @@
  *
  * @param {API} api
  */
-function showSubjectsPage(api) {
+function showSubjectsPage(api, updateUrl) {
     sidebarSetActive($LI_SUBJECTS);
     showSubjectsHeadline(api);
+    if (updateUrl) {
+        setStateUrl([{key: 'subjects'}]);
+    }
     var html = '<div class="row"><div class="col-lg-12">';
     html += new Panel(
         'Brain Anatomy MRI Data',
@@ -41,13 +44,16 @@ function showSubjectsPage(api) {
  * @param {string} url
  * @param {API} api
  */
-function showSubject(url, api) {
+function showSubject(url, api, updateUrl) {
     $('#' + $EL_CONTENT).html(showSpinnerHtml());
     $.ajax({
         url: url,
         type: 'GET',
         contentType: 'application/json',
         success: function(data) {
+            if (updateUrl) {
+                setStateUrl([{key: 'subject', value: data.id}]);
+            }
             // Build content Html
             var name = new EditableAttribute(
                 'objName',
@@ -59,7 +65,7 @@ function showSubject(url, api) {
                         'name',
                         value,
                         function() {
-                            showSubject(url, api)
+                            showSubject(url, api, false)
                         }
                     )
                 }
@@ -74,14 +80,20 @@ function showSubject(url, api) {
                         'description',
                         value,
                         function() {
-                            showSubject(url, api)
+                            showSubject(url, api, false)
                         }
                     )
                 }
             );
+            let readOnly = getBoolean('readOnly', data.properties);
             var html = name.html();
             html += description.html();
-            html += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
+            html += showDownloadableObjectButtonsHtml(
+                'deleteObj',
+                'closePanel',
+                getHATEOASReference('download', data.links),
+                readOnly
+            );
             html = '<div class="row"><div class="col-lg-4">' + html + '</div><div class="col-lg-8"></div>';
             // Display content
             sidebarSetActive('');
@@ -90,16 +102,18 @@ function showSubject(url, api) {
             // Set onclick handler for elements
             name.onclick();
             description.onclick();
-            (function(name, url) {
-                $('#deleteObj').click(function(event) {
-                    event.preventDefault();
-                    deleteObject('subject', name, url, function() {showSubjectsPage(api);});
-                });
-            })(data.name, getHATEOASReference('delete', data.links), api);
+            if (!readOnly) {
+                (function(name, url) {
+                    $('#deleteObj').click(function(event) {
+                        event.preventDefault();
+                        deleteObject('subject', name, url, function() {showSubjectsPage(api, true);});
+                    });
+                })(data.name, getHATEOASReference('delete', data.links), api);
+            }
             (function(api) {
                 $('#closePanel').click(function(event) {
                     event.preventDefault();
-                    showSubjectsPage(api);
+                    showSubjectsPage(api, true);
                 });
             })(api);
         },

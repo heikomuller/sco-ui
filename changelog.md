@@ -29,3 +29,8 @@
 
 * Prevent default on click events
 * Open attachments in new tab
+
+### 0.6.0 - 2017-07-11
+
+* Add Url parameters and history to enable links to resources
+* Hide Delete buttons for read-only resources

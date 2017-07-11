@@ -116,6 +116,14 @@ function deleteObject(objtype, name, url, reload) {
 }
 
 /**
+ * Returns value of the given property as a boolean value. The result is false
+ * if the property is not present.
+ */
+function getBoolean(key, properties) {
+    return (getProperty(key, properties) == 'true');
+};
+
+/**
  * Get reference with given rel from HATEOAS reference list.
  *
  * @param {string} id

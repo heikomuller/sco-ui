@@ -7,7 +7,8 @@ $EXPERIMENT_TABLE_DEF = [
             'handler' : function(item, api) {
                 return showExperiment(
                     getHATEOASReference('self', item.links),
-                    api
+                    api,
+                    true
                 );
             }
         }
@@ -34,7 +35,8 @@ $EXPERIMENT_RUNS_TABLE_DEF = [
             'handler' : function(item, api) {
                 return showModelRun(
                     getHATEOASReference('self', item.links),
-                    api
+                    api,
+                    true
                 );
             }
         }

@@ -31,38 +31,44 @@ function showSpinnerHtml() {
 /**
  * Shows button row with delete and close buttons.
  */
-function showDefaultObjectButtonsHtml(deleteId, closeId) {
-    return '<div class="button-row">' +
-        '<button class="btn btn-danger" id="' + deleteId + '">' +
-            '<i class="fa fa-trash" aria-hidden="true"></i> ' +
-            'Delete' +
-        '</button>' +
-        '&nbsp;&nbsp;&nbsp;' +
-        '<button class="btn btn-default" id="' + closeId + '">' +
+function showDefaultObjectButtonsHtml(deleteId, closeId, readOnly) {
+    let html = '<div class="button-row">';
+    if (!readOnly) {
+        html += '<button class="btn btn-danger" id="' + deleteId + '">' +
+                    '<i class="fa fa-trash" aria-hidden="true"></i> ' +
+                    'Delete' +
+                '</button>' +
+                '&nbsp;&nbsp;&nbsp;';
+    }
+    html += '<button class="btn btn-default" id="' + closeId + '">' +
             '<i class="fa fa-times" aria-hidden="true"></i> ' +
             'Close' +
         '</button>' +
     '</div>';
+    return html;
 }
 
 /**
  * Shows button row with delete and close buttons.
  */
-function showDownloadableObjectButtonsHtml(deleteId, closeId, downloadUrl) {
-    return '<div class="button-row">' +
-        '<a type="button" href="' + downloadUrl + '" class="btn btn-success">' +
-            '<i class="fa fa-download" aria-hidden="true"></i> ' +
-            'Download' +
-        '</a>' +
-        '&nbsp;&nbsp;&nbsp;' +
-        '<button class="btn btn-danger" id="' + deleteId + '">' +
-            '<i class="fa fa-trash" aria-hidden="true"></i> ' +
-            'Delete' +
-        '</button>' +
-        '&nbsp;&nbsp;&nbsp;' +
-        '<button class="btn btn-default" id="' + closeId + '">' +
+function showDownloadableObjectButtonsHtml(deleteId, closeId, downloadUrl, readOnly) {
+    let html = '<div class="button-row">';
+    html += '<a type="button" href="' + downloadUrl + '" class="btn btn-success">' +
+        '<i class="fa fa-download" aria-hidden="true"></i> ' +
+        'Download' +
+    '</a>' +
+    '&nbsp;&nbsp;&nbsp;';
+    if (!readOnly) {
+        html += '<button class="btn btn-danger" id="' + deleteId + '">' +
+                '<i class="fa fa-trash" aria-hidden="true"></i> ' +
+                'Delete' +
+            '</button>' +
+            '&nbsp;&nbsp;&nbsp;'
+    }
+    html += '<button class="btn btn-default" id="' + closeId + '">' +
             '<i class="fa fa-times" aria-hidden="true"></i> ' +
             'Close' +
         '</button>' +
     '</div>';
+    return html;
 }

@@ -3,9 +3,12 @@
  *
  * @param {API} api
  */
-function showImageGroupsPage(api) {
+function showImageGroupsPage(api, updateUrl) {
     sidebarSetActive($LI_IMAGES);
     showImageGroupsHeadline(api);
+    if (updateUrl) {
+        setStateUrl([{key: 'images'}]);
+    }
     var html = '<div class="row"><div class="col-lg-12">';
     html += new Panel(
         'Image Groups',
@@ -41,13 +44,16 @@ function showImageGroupsPage(api) {
  * @param {string} url
  * @param {API} api
  */
-function showImageGroup(url, api) {
+function showImageGroup(url, api, updateUrl) {
     $('#' + $EL_CONTENT).html(showSpinnerHtml());
     $.ajax({
         url: url,
         type: 'GET',
         contentType: 'application/json',
         success: function(data) {
+            if (updateUrl) {
+                setStateUrl([{key: 'imagegroup', value: data.id}]);
+            }
             // Build content Html
             var name = new EditableAttribute(
                 'objName',
@@ -59,7 +65,7 @@ function showImageGroup(url, api) {
                         'name',
                         value,
                         function() {
-                            showImageGroup(url, api)
+                            showImageGroup(url, api, false)
                         }
                     )
                 }
@@ -74,7 +80,7 @@ function showImageGroup(url, api) {
                         'description',
                         value,
                         function() {
-                            showImageGroup(url, api)
+                            showImageGroup(url, api, false)
                         }
                     )
                 }
@@ -91,18 +97,24 @@ function showImageGroup(url, api) {
                         getHATEOASReference('options', data.links),
                         values,
                         function() {
-                            showImageGroup(url, api)
+                            showImageGroup(url, api, false)
                         }
                     )
                 }
             );
             var listing = new ImageListing('imgListing');
             var imagePopup = new ImageModal('imgModal');
+            let readOnly = getBoolean('readOnly', data.properties);
             var html = name.html();
             html += description.html();
             html += options.html();
             html += infoModal.html();
-            html += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
+            html += showDownloadableObjectButtonsHtml(
+                'deleteObj',
+                'closePanel',
+                getHATEOASReference('download', data.links),
+                readOnly
+            );
             html = '<div class="row">' +
                 '<div class="col-lg-4">' + html + '</div>' +
                 '<div class="col-lg-4">' + listing.html() + '</div>' +
@@ -116,16 +128,18 @@ function showImageGroup(url, api) {
             name.onclick();
             description.onclick();
             options.onclick();
-            (function(name, url) {
-                $('#deleteObj').click(function(event) {
-                    event.preventDefault();
-                    deleteObject('image group', name, url, function() {showImageGroupsPage(api);});
-                });
-            })(data.name, getHATEOASReference('delete', data.links), api);
+            if (!readOnly) {
+                (function(name, url) {
+                    $('#deleteObj').click(function(event) {
+                        event.preventDefault();
+                        deleteObject('image group', name, url, function() {showImageGroupsPage(api, true);});
+                    });
+                })(data.name, getHATEOASReference('delete', data.links), api);
+            }
             (function(api) {
                 $('#closePanel').click(function(event) {
                     event.preventDefault();
-                    showImageGroupsPage(api);
+                    showImageGroupsPage(api, true);
                 });
             })(api);
             // Show image listing

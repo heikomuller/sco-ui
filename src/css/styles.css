@@ -127,10 +127,6 @@ a.highlight-link:hover {
 	color: #222;
 }
 
-.sidebar a:focus {
-	color: #881111;
-}
-
 @media (min-width: 768px) {
 	.sidebar {
 		display: block;
@@ -161,7 +157,7 @@ a.highlight-link:hover {
 
 .sidebar ul.nav .active a, .sidebar ul.nav li.parent a.active,
 .sidebar ul.nav .active > a:hover, .sidebar ul.nav li.parent a.active:hover,
-.sidebar ul.nav .active > a:focus, .sidebar ul.nav li.parent a.active:focus {
+.sidebar ul.nav .active > a:focus, .sidebar ul.nav li.parent a:focus {
 	color: #fff;
 	background-color: #881111;
 }

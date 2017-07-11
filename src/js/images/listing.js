@@ -7,7 +7,8 @@ $IMAGE_TABLE_DEF = [
             'handler' : function(item, api) {
                 return showImageGroup(
                     getHATEOASReference('self', item.links),
-                    api
+                    api,
+                    true
                 );
             }
         }

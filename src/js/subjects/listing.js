@@ -7,7 +7,8 @@ $SUBJECT_TABLE_DEF = [
             'handler' : function(item, api) {
                 return showSubject(
                     getHATEOASReference('self', item.links),
-                    api
+                    api,
+                    true
                 );
             }
         }

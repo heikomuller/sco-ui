@@ -6,9 +6,12 @@ var model = null;
  *
  * @param {API} api
  */
-function showExperimentsPage(api) {
+function showExperimentsPage(api, updateUrl) {
     sidebarSetActive($LI_EXPERIMENTS);
     showExperimentsHeadline(api);
+    if (updateUrl) {
+        setStateUrl([{key: 'experiments'}]);
+    }
     var html = '<div class="row"><div class="col-lg-12">';
     html += new Panel(
         'Experiments',
@@ -98,7 +101,7 @@ function showCreateModelRunPage(experiment, api) {
             (function(experiment, api) {
                 $('#btnRunCancel').click(function(event) {
                     event.preventDefault();
-                    showExperiment(getHATEOASReference('self', experiment.links), api);
+                    showExperiment(getHATEOASReference('self', experiment.links), api, true);
                 });
             })(experiment, api);
             showSelectedModelParameter(experiment, getHATEOASReference('self', models[0].links));
@@ -120,13 +123,16 @@ function showCreateModelRunPage(experiment, api) {
  * @param {string} url
  * @param {API} api
  */
-function showExperiment(url, api) {
+function showExperiment(url, api, updateUrl) {
     $('#' + $EL_CONTENT).html(showSpinnerHtml());
     $.ajax({
         url: url,
         type: 'GET',
         contentType: 'application/json',
         success: function(data) {
+            if (updateUrl) {
+                setStateUrl([{key: 'experiment', value: data.id}]);
+            }
             // Build content Html
             var name = new EditableAttribute(
                 'objName',
@@ -138,7 +144,7 @@ function showExperiment(url, api) {
                         'name',
                         value,
                         function() {
-                            showExperiment(url, api)
+                            showExperiment(url, api, false)
                         }
                     )
                 }
@@ -153,11 +159,12 @@ function showExperiment(url, api) {
                         'description',
                         value,
                         function() {
-                            showExperiment(url, api)
+                            showExperiment(url, api, false)
                         }
                     )
                 }
             );
+            let readOnly = getBoolean('readOnly', data.properties);
             var col1Html = name.html();
             col1Html += description.html();
             col1Html += '<p class="attribute-label">Subject</p>';
@@ -197,7 +204,7 @@ function showExperiment(url, api) {
                 col1Html += '<button id="fMRIUploadFileSelect" class="btn btn-xs btn-success fileinput-button"><i class="fa fa-upload" aria-hidden="true"></i> Upload</button>';
             }
             col1Html += '</div>';
-            col1Html += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
+            col1Html += showDefaultObjectButtonsHtml('deleteObj', 'closePanel', readOnly);
             var col2Html = '<p class="attribute-label">Predictions</p>';
             col2Html += '<div class="object-listing" id="experimentRuns"></div>'
             col2Html += '<div class="button-row">';
@@ -223,7 +230,7 @@ function showExperiment(url, api) {
     		    clickable: '#fMRIUploadFileSelect'
     	  	});
             dzone.on('queuecomplete', function() {
-                showExperiment(url, api);
+                showExperiment(url, api, false);
             });
             // Set onclick handler for elements
             name.onclick();
@@ -235,32 +242,34 @@ function showExperiment(url, api) {
                         var name = data.fmri.name;
                         var url = getHATEOASReference('delete', data.fmri.links);
                         var experimentUrl = getHATEOASReference('self', data.links);
-                        deleteObject('functional data', name, url, function() {showExperiment(experimentUrl, api);});
+                        deleteObject('functional data', name, url, function() {showExperiment(experimentUrl, api, false);});
                     });
                 })(data, api);
             }
             (function(url, api) {
                 $('#expSubjectRef').click(function(event) {
                     event.preventDefault();
-                    showSubject(url, api);
+                    showSubject(url, api, true);
                 });
             })(getHATEOASReference('self', data.subject.links), api);
             (function(url, api) {
                 $('#expImagesRef').click(function(event) {
                     event.preventDefault();
-                    showImageGroup(url, api);
+                    showImageGroup(url, api, true);
                 });
             })(getHATEOASReference('self', data.images.links), api);
-            (function(name, url) {
-                $('#deleteObj').click(function(event) {
-                    event.preventDefault();
-                    deleteObject('experiment', name, url, function() {showExperimentsPage(api);});
-                });
-            })(data.name, getHATEOASReference('delete', data.links), api);
+            if (!readOnly) {
+                (function(name, url) {
+                    $('#deleteObj').click(function(event) {
+                        event.preventDefault();
+                        deleteObject('experiment', name, url, function() {showExperimentsPage(api, true);});
+                    });
+                })(data.name, getHATEOASReference('delete', data.links), api);
+            }
             (function(api) {
                 $('#closePanel').click(function(event) {
                     event.preventDefault();
-                    showExperimentsPage(api);
+                    showExperimentsPage(api, true);
                 });
             })(api);
             (function(experiment, api) {
@@ -286,13 +295,19 @@ function showExperiment(url, api) {
  * @param {string} url
  * @param {API} api
  */
-function showModelRun(url, api) {
+function showModelRun(url, api, updateUrl) {
     $('#' + $EL_CONTENT).html(showSpinnerHtml());
     $.ajax({
         url: url,
         type: 'GET',
         contentType: 'application/json',
         success: function(data) {
+            if (updateUrl) {
+                setStateUrl([
+                    {key: 'experiment', value: data.experiment.id},
+                    {key: 'run', value: data.id}
+                ]);
+            }
             // Build content Html
             var name = new EditableAttribute(
                 'objName',
@@ -304,7 +319,7 @@ function showModelRun(url, api) {
                         'name',
                         value,
                         function() {
-                            showModelRun(url, api)
+                            showModelRun(url, api, false)
                         }
                     )
                 }
@@ -319,11 +334,12 @@ function showModelRun(url, api) {
                         'description',
                         value,
                         function() {
-                            showModelRun(url, api)
+                            showModelRun(url, api, false)
                         }
                     )
                 }
             );
+            let readOnly = getBoolean('readOnly', data.properties);
             let htmlCol1 = name.html();
             htmlCol1 += description.html();
             htmlCol1 += '<p class="attribute-label">State</p>';
@@ -362,9 +378,14 @@ function showModelRun(url, api) {
                         htmlCol1 += '<p class="attachment">' + alink + '</p>';
                     }
                 }
-                htmlCol1 += showDownloadableObjectButtonsHtml('deleteObj', 'closePanel', getHATEOASReference('download', data.links));
+                htmlCol1 += showDownloadableObjectButtonsHtml(
+                    'deleteObj',
+                    'closePanel',
+                    getHATEOASReference('download', data.links),
+                    readOnly
+                );
             } else {
-                htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel');
+                htmlCol1 += showDefaultObjectButtonsHtml('deleteObj', 'closePanel', readOnly);
             }
             const model = new PredictiveModel(data.model);
             let html = '';
@@ -418,23 +439,25 @@ function showModelRun(url, api) {
             // Set onclick handlers
             name.onclick();
             description.onclick();
-            (function(name, url) {
-                $('#deleteObj').click(function(event) {
-                    event.preventDefault();
-                    deleteObject(
-                        'prediction',
-                        name,
-                        url,
-                        function() {
-                            showExperiment(getHATEOASReference('self', data.experiment.links), api);
-                        }
-                    );
-                });
-            })(data.name, getHATEOASReference('delete', data.links), api);
+            if (!readOnly) {
+                (function(name, url) {
+                    $('#deleteObj').click(function(event) {
+                        event.preventDefault();
+                        deleteObject(
+                            'prediction',
+                            name,
+                            url,
+                            function() {
+                                showExperiment(getHATEOASReference('self', data.experiment.links), api, true);
+                            }
+                        );
+                    });
+                })(data.name, getHATEOASReference('delete', data.links), api);
+            }
             (function(url, api) {
                 $('#closePanel').click(function(event) {
                     event.preventDefault();
-                    showExperiment(url, api);
+                    showExperiment(url, api, true);
                 });
             })(getHATEOASReference('self', data.experiment.links), api);
             for (var i = 0; i < model.parameters.length; i++) {
@@ -550,7 +573,7 @@ function submitModelRun(experiment, api) {
         contentType: 'application/json',
         data: JSON.stringify(config),
         success : function(data) {
-            showExperiment(getHATEOASReference('self', experiment.links), api);
+            showExperiment(getHATEOASReference('self', experiment.links), api, true);
         },
         error: function(xhr, status, error) {
             if (xhr.responseText) {
@@ -561,5 +584,4 @@ function submitModelRun(experiment, api) {
             alert(err);
         }
     });
-    showExperiment(getHATEOASReference('self', experiment.links), api);
 }

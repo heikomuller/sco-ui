@@ -83,7 +83,7 @@ FileUploadForm.prototype = {
             file.previewElement.querySelector(".start").onclick = function() { dzone.enqueueFile(file); };
         });
         dzone.on('queuecomplete', function() {
-            completeCallback(api);
+            completeCallback(api, false);
         });
         (function(elementId, dzone) {
             $('#' + elementId).click(function(event) {

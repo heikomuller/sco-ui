@@ -46,11 +46,12 @@ function initApp(url) {
             // Set page title
             document.title = data.title;
             // Set API documentation link
+            const apiRef = getHATEOASReference('self', data.links);
             const apiDocRef = getHATEOASReference('doc', data.links);
             $('#' + $EL_APIDOC).html('<a href="' + apiDocRef + '" target="_blank"><i class="fa fa-info fa-fw"></i> API Documentation</a>');
             // Set connection information
             const apiDocLink = '<a class="connect" href="' + apiDocRef + '"><i class="fa fa-book"/></a>';
-            let connectInfo = '<a class="connect" href="' + getHATEOASReference('self', data.links) + '">' + data.name + '</a>';
+            let connectInfo = '<a class="connect" href="' + apiRef + '">' + data.name + '</a>';
             connectInfo = '[ Connected to ' + connectInfo + ' ' + apiDocLink + ' ]';
             connectInfo = '<span class="connect">' + connectInfo + '</span>';
             $('#' + $EL_CONNECT_INFO).html(connectInfo);
@@ -60,7 +61,7 @@ function initApp(url) {
                 (function(elementId, api) {
                     $('#' + elementId).click(function(event) {
                         event.preventDefault();
-                        showExperimentsPage(api);
+                        showExperimentsPage(api, true);
                     });
                 })(experimentsLinks[i], api);
             }
@@ -69,7 +70,7 @@ function initApp(url) {
                 (function(elementId, api) {
                     $('#' + elementId).click(function(event) {
                         event.preventDefault();
-                        showHomePage(api);
+                        showHomePage(api, true);
                     });
                 })(homeLinks[i], api);
             }
@@ -78,7 +79,7 @@ function initApp(url) {
                 (function(elementId, api) {
                     $('#' + elementId).click(function(event) {
                         event.preventDefault();
-                        showImageGroupsPage(api);
+                        showImageGroupsPage(api, true);
                     });
                 })(imageLinks[i], api);
             }
@@ -87,12 +88,42 @@ function initApp(url) {
                 (function(elementId, api) {
                     $('#' + elementId).click(function(event) {
                         event.preventDefault();
-                        showSubjectsPage(api);
+                        showSubjectsPage(api, true);
                     });
                 })(subjectLinks[i], api);
             }
-            // Sohow homepage content
-            showHomePage(api);
+            window.addEventListener('popstate', function(event) {
+                setState(event.state, api, false);
+            });
+            // Parse search parameters of the Url to determine which content
+            // to show
+            const urlParams = new URLSearchParams(window.location.search);
+            let resourceId = '';
+            for (let key of urlParams.keys()) {
+                resourceId += '#' + key.toLowerCase();
+            }
+            if (resourceId === '') {
+                setState([], api, true);
+            } else if (resourceId === '#subjects') {
+                setState([{key: 'subjects'}], api, true);
+            } else if (resourceId === '#subject') {
+                setState([{key: 'subject', value: urlParams.get('subject')}], api, true);
+            } else if (resourceId === '#images') {
+                setState([{key: 'images'}], api, true);
+            } else if (resourceId === '#imagegroup') {
+                setState([{key: 'imagegroup', value: urlParams.get('imagegroup')}], api, true);
+            } else if (resourceId === '#experiments') {
+                setState([{key: 'experiments'}], api, true)
+            } else if (resourceId === '#experiment') {
+                setState([{key: 'experiment', value: urlParams.get('experiment')}], api, true);
+            } else if ((resourceId === '#experiment#run') || (resourceId === '#run#experiment')) {
+                setState([
+                    {key: 'experiment', value: urlParams.get('experiment')},
+                    {key: 'run', value: urlParams.get('run')}
+                ], api, true);
+            } else {
+                showUnknownResource('The requested resource does not exist on our server.', api);
+            }
         },
         error: function(xhr, status, error) {
             if (xhr.responseText) {
@@ -103,20 +134,97 @@ function initApp(url) {
     });
 };
 
+function setState(state, api, updateStack) {
+    if (state.length === 0) {
+        showHomePage(api, updateStack);
+    } else if (state.length === 1) {
+        const key = state[0].key;
+        if (key === 'subjects') {
+            showSubjectsPage(api, updateStack);
+        } else if (key === 'subject') {
+            const url = getHATEOASReference('subjects.list', api.data.links)
+                + '/' + state[0].value;
+            showSubject(url, api, updateStack);
+        } else if (key === 'images') {
+            showImageGroupsPage(api, updateStack);
+        } else if (key === 'imagegroup') {
+            const url = getHATEOASReference('images.groups.list', api.data.links)
+                + '/' + state[0].value;
+            showImageGroup(url, api, updateStack);
+        } else if (key === 'experiments') {
+             showExperimentsPage(api, updateStack);
+        } else if (key === 'experiment') {
+            const url = getHATEOASReference('experiments.list', api.data.links)
+                + '/' + state[0].value;
+            showExperiment(url, api, updateStack);
+        }
+    } else if (state.length === 2) {
+        const url = getHATEOASReference('experiments.list', api.data.links)
+            + '/' + state[0].value
+            + '/predictions/' + state[1].value;
+        showModelRun(url, api, updateStack);
+    }
+}
+
+/**
+ * Set the search parameter too point to a particular resource.
+ */
+function setStateUrl(params) {
+    const urlParams = new URLSearchParams('');
+    for (var para of params) {
+        const property = para.key;
+        if (para.hasOwnProperty('value')) {
+            urlParams.set(property, para.value);
+        }  else {
+            urlParams.set(property, '');
+        }
+    }
+    const search = urlParams.toString();
+    const location = window.location;
+    let url = [location.protocol, '//', location.host, location.pathname].join('');
+    const pos = url.indexOf('?');
+    if (pos > 0) {
+        url = srl.substring(0, pos);
+    }
+    if (search !== '') {
+        url += '?' + search;
+    }
+    history.pushState(params, '', url);
+}
+
 /**
  * Show content for home screen. Uses the overview information in the API
  * description object to display the welcome panel.
  *
  * @param {API} api
  */
-function showHomePage(api) {
+function showHomePage(api, updateUrl) {
     sidebarSetActive($LI_HOME);
     showHomeHeadline(api);
+    if (updateUrl) {
+        setStateUrl([]);
+    }
     var html = '<div class="row"><div class="col-lg-12">';
     var overview = api.homePageContent;
     if (overview) {
         html += new InfoPanel(overview.title, overview.content).html();
     }
+    html += '</div></div>';
+    $('#' + $EL_CONTENT).html(html);
+    return false;
+};
+
+/**
+ * Show a message the the resource specified by a given set of Url search
+ * parameters is unknown.
+ *
+ * @param {API} api
+ */
+function showUnknownResource(message, api) {
+    sidebarSetActive('');
+    showHomeHeadline(api);
+    let html = '<div class="row"><div class="col-lg-12">';
+    html += '<p class="error-message">' + message + '</p>';
     html += '</div></div>';
     $('#' + $EL_CONTENT).html(html);
     return false;
