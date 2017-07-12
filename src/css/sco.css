@@ -99,7 +99,7 @@ p.repo-info {
 }
 
 span.repo-icon {
-    font-size: 1.5em;
+    font-size: 1.25em;
     padding-right: 0.1em;
 }
 
@@ -331,4 +331,10 @@ a.internal-link {
 .repo-link {
     color: #000;
     text-decoration: none;
+}
+
+.repo-link:hover,
+.repo-link:focus {
+    color: #881111;
+    text-decoration: underline;
 }
