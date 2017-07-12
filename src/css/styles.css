@@ -224,7 +224,7 @@ a.highlight-link:hover {
 }
 
 .home-panel-heading {
-    background: #cecece;
+    background: #e0e0e0;
 	font-size: 18px;
 	font-weight: 700;
     text-transform: uppercase;
@@ -242,7 +242,7 @@ a.highlight-link:hover {
 	font-weight: bold;
 }
 .panel-info .panel-body {
-        background: #e0e0e0;
+        background: #fcfcfc;
         color: #2a2b2c;
 }
 .panel-subpanel {
