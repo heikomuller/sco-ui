@@ -120,7 +120,12 @@ function deleteObject(objtype, name, url, reload) {
  * if the property is not present.
  */
 function getBoolean(key, properties) {
-    return (getProperty(key, properties) == 'true');
+    const val = getProperty(key, properties);
+    if (val === '') {
+        return false;
+    } else {
+        return val;
+    }
 };
 
 /**
