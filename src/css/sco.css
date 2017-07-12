@@ -64,6 +64,45 @@ p.info {
     padding: 0px 10px;
 }
 
+h3.doc-headline {
+    color: #2a2b2c;
+    font-size: 1.25em;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 10px;
+    margin-top: 40px;
+}
+
+table.source-table {
+    margin-top: 20px;
+    width: 100%;
+}
+
+td.source-img,
+td.source-description {
+    vertical-align: top;
+    padding: 0px 20px;
+}
+
+p.repo-headline {
+    font-size: 1.25em;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+p.repo-info {
+    border-top: 1px solid #cecece;
+    margin-top: 0px;
+    margin-bottom: 25px;
+    text-align: justify;
+}
+
+span.repo-icon {
+    font-size: 1.5em;
+    padding-right: 0.1em;
+}
+
 /*
  * BREADCRUMB
  */
@@ -285,5 +324,10 @@ a.internal-link {
 
 .nav-link {
     color: #2a2b2c;
+    text-decoration: none;
+}
+
+.repo-link {
+    color: #000;
     text-decoration: none;
 }
