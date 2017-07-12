@@ -148,7 +148,20 @@ a.highlight-link:hover {
 	}
 }
 
-.sidebar ul.nav a:hover,
+ul.nav a:hover,
+ul.nav li.parent ul li a:hover {
+	text-decoration: none;
+	background-color: #314453;
+	color: #fff;
+}
+
+ul.nav .active a, ul.nav li.parent a.active,
+ul.nav .active > a:hover, ul.nav li.parent a.active:hover,
+ul.nav .active > a:focus, ul.nav li.parent a.active:focus {
+	color: #fff;
+	background-color: #881111;
+}
+/*.sidebar ul.nav a:hover,
 .sidebar ul.nav li.parent ul li a:hover {
 	text-decoration: none;
 	background-color: #314453;
@@ -157,10 +170,10 @@ a.highlight-link:hover {
 
 .sidebar ul.nav .active a, .sidebar ul.nav li.parent a.active,
 .sidebar ul.nav .active > a:hover, .sidebar ul.nav li.parent a.active:hover,
-.sidebar ul.nav .active > a:focus, .sidebar ul.nav li.parent a:focus {
+.sidebar ul.nav .active > a:focus, .sidebar ul.nav li.parent a.active:focus {
 	color: #fff;
 	background-color: #881111;
-}
+}*/
 
 .sidebar ul.nav ul,
 .sidebar ul.nav ul li {
