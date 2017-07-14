@@ -34,3 +34,7 @@
 
 * Add Url parameters and history to enable links to resources
 * Hide Delete buttons for read-only resources
+
+### 0.7.0 - 2017-07-13
+
+* Add developer menu content pages

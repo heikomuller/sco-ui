@@ -333,6 +333,7 @@ a.internal-link {
     text-decoration: none;
 }
 
+a.connect:hover,
 .repo-link:hover,
 .repo-link:focus {
     color: #881111;

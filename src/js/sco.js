@@ -6,7 +6,7 @@ var $EL_CONTENT = 'main-content';
 var $EL_PANEL = 'main-panel';
 var $EL_TITLE = 'main-title';
 
-var $EL_APIDOC = 'apiDocumentationLink';
+var $EL_DEVMENU = 'menuDev';
 var $EL_CONNECT_INFO = 'connectionInfo';
 
 /**
@@ -47,8 +47,34 @@ function initApp(url) {
             document.title = data.title;
             // Set API documentation link
             const apiRef = getHATEOASReference('self', data.links);
+            // Create entries for developer drop-down menu
+            let devMenuHtml = '';
+            for (let i = 0; i < api.pages.length; i++) {
+                const page = api.pages[i];
+                if (page.id !== 'home') {
+                    devMenuHtml += menuEntryHtml('mnuDev' + page.id, page.label, 'book');
+                }
+            }
+            devMenuHtml += '<li role="separator" class="divider"></li>';
+            devMenuHtml += menuEntryHtml('refAPIDoc', 'API Documentation', 'info');
+            $('#' + $EL_DEVMENU).html(devMenuHtml);
+            // Set onclick handler for content pages
+            for (let i = 0; i < api.pages.length; i++) {
+                (function(page, api) {
+                    $('#mnuDev' + page.id).click(function(event) {
+                        event.preventDefault();
+                        showContentPage(api, page.id, true);
+                    });
+                })(api.pages[i], api);
+            }
             const apiDocRef = getHATEOASReference('doc', data.links);
-            $('#' + $EL_APIDOC).html('<a href="' + apiDocRef + '" target="_blank"><i class="fa fa-info fa-fw"></i> API Documentation</a>');
+            // Set onclick handler for API documentation
+            (function(elementId, target) {
+                $('#' + elementId).click(function(event) {
+                    event.preventDefault();
+                    window.open(target, '_blank');
+                });
+            })('refAPIDoc', apiDocRef);
             // Set connection information
             const apiDocLink = '<a class="connect" href="' + apiDocRef + '"><i class="fa fa-book"/></a>';
             let connectInfo = '<a class="connect" href="' + apiRef + '">' + data.name + '</a>';
@@ -70,7 +96,7 @@ function initApp(url) {
                 (function(elementId, api) {
                     $('#' + elementId).click(function(event) {
                         event.preventDefault();
-                        showHomePage(api, true);
+                        showContentPage(api, 'home', true);
                     });
                 })(homeLinks[i], api);
             }
@@ -116,6 +142,13 @@ function initApp(url) {
                 setState([{key: 'experiments'}], api, true)
             } else if (resourceId === '#experiment') {
                 setState([{key: 'experiment', value: urlParams.get('experiment')}], api, true);
+            } else if (resourceId === '#page') {
+                const pageId = urlParams.get('page');
+                if (pageId !== 'home') {
+                    setState([{key: 'page', value: pageId}], api, true);
+                } else {
+                    showUnknownResource('The requested resource does not exist on our server.', api);
+                }
             } else if ((resourceId === '#experiment#run') || (resourceId === '#run#experiment')) {
                 setState([
                     {key: 'experiment', value: urlParams.get('experiment')},
@@ -134,9 +167,20 @@ function initApp(url) {
     });
 };
 
+/**
+ * Html elemnts for a dropdown menu entry.
+ */
+function menuEntryHtml(elementId, label, icon) {
+    let ref = '<a href="#"><i class="fa fa-' + icon + ' fa-fw"></i> ' + label + '</a>';
+    return '<li id="' + elementId + '">' + ref + '</li>';
+};
+
+/**
+ * Show a particuar page based on the given state information.
+ */
 function setState(state, api, updateStack) {
     if (state.length === 0) {
-        showHomePage(api, updateStack);
+        showContentPage(api, 'home', updateStack);
     } else if (state.length === 1) {
         const key = state[0].key;
         if (key === 'subjects') {
@@ -157,6 +201,8 @@ function setState(state, api, updateStack) {
             const url = getHATEOASReference('experiments.list', api.data.links)
                 + '/' + state[0].value;
             showExperiment(url, api, updateStack);
+        } else if (key === 'page') {
+            showContentPage(api, state[0].value, updateStack);
         }
     } else if (state.length === 2) {
         const url = getHATEOASReference('experiments.list', api.data.links)
@@ -198,19 +244,48 @@ function setStateUrl(params) {
  *
  * @param {API} api
  */
-function showHomePage(api, updateUrl) {
-    sidebarSetActive($LI_HOME);
+function showContentPage(api, pageId, updateUrl) {
+    if (pageId === 'home') {
+        sidebarSetActive($LI_HOME);
+        if (updateUrl) {
+            setStateUrl([]);
+        }
+    } else {
+        sidebarSetActive();
+        if (updateUrl) {
+            setStateUrl([{key: 'page', value: pageId}]);
+        }
+    }
     showHomeHeadline(api);
-    if (updateUrl) {
-        setStateUrl([]);
+    let page;
+    for (let i = 0; i < api.pages.length; i++) {
+        if (api.pages[i].id === pageId) {
+            page = api.pages[i];
+            break;
+        }
     }
-    var html = '<div class="row"><div class="col-lg-12">';
-    var overview = api.homePageContent;
-    if (overview) {
-        html += new InfoPanel(overview.title, overview.content).html();
+    if (page) {
+        $('#' + $EL_CONTENT).html(showSpinnerHtml());
+        $.ajax({
+            url: page.url,
+            type: 'GET',
+            contentType: 'application/json',
+            success: function(data) {
+                let html = '<div class="row"><div class="col-lg-12">';
+                html += new InfoPanel(data.title, data.body).html();
+                html += '</div></div>';
+                $('#' + $EL_CONTENT).html(html);
+            },
+            error: function(xhr, status, error) {
+                if (xhr.responseText) {
+                    var err = JSON.parse(xhr.responseText).message;
+                }
+                $('#' + $EL_CONTENT).html(showErrorMessageHtml(err));
+            }
+        });
+    } else {
+        $('#' + $EL_CONTENT).html(showErrorMessageHtml('Unknown page: ' + pageId));
     }
-    html += '</div></div>';
-    $('#' + $EL_CONTENT).html(html);
     return false;
 };
 

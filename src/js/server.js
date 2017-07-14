@@ -18,6 +18,19 @@ var API = function(data) {
             new ParameterDef(data.resources.imageGroupOptions[i])
         )
     }
+    /**
+     * List of content pages
+     */
+    this.pages = [];
+    for (let i = 0; i < data.resources.pages.length; i++) {
+        const page = data.resources.pages[i];
+        this.pages.push({
+            'id': page.id,
+            'label': page.label,
+            'title': page.title,
+            'url': getHATEOASReference('self', page.links)
+        });
+    }
 };
 
 API.prototype = {

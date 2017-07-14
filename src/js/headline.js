@@ -42,7 +42,7 @@ function showExperimentsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Experiments',
@@ -57,7 +57,7 @@ function showExperimentHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Experiments',
@@ -74,7 +74,7 @@ function showHomeHeadline(api) {
     new Headline([{
         'name' : 'Home',
         'icon' : 'fa-home',
-        'link' : function() {showHomePage(api, true);}
+        'link' : function() {showContentPage(api, 'home', true);}
     }]).show();
 };
 
@@ -83,7 +83,7 @@ function showImageGroupsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Images',
@@ -98,7 +98,7 @@ function showImageGroupHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Images',
@@ -116,7 +116,7 @@ function showModelRunHeadline(name, experiment, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Experiments',
@@ -140,7 +140,7 @@ function showSubjectsHeadline(api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Subjects',
@@ -155,7 +155,7 @@ function showSubjectHeadline(name, api) {
         {
             'name' : 'Home',
             'icon' : 'fa-home',
-            'link' : function() {showHomePage(api, true);}
+            'link' : function() {showContentPage(api, 'home', true);}
         },
         {
             'name' : 'Subjects',
